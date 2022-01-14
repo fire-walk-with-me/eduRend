@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Texture.h"
+#include "Cube.h"
 
 // New files
 // Material
@@ -76,6 +77,10 @@ class OurTestScene : public Scene
 
 	QuadModel* quad;
 	OBJModel* sponza;
+	Cube* cube;
+
+	//Model-to-world transformation matrices
+	mat4f Mcube;
 
 	// Model-to-world transformation matrices
 	mat4f Msponza;

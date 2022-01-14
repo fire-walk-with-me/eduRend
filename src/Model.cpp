@@ -19,16 +19,16 @@ QuadModel::QuadModel(
 	// Populate the vertex array with 4 vertices
 	Vertex v0, v1, v2, v3;
 	v0.Pos = { -0.5, -0.5f, 0.0f };
-	v0.Normal = { 0, 0, 1 };
+	v0.Normal = { 1, 1, 1 };
 	v0.TexCoord = { 0, 0 };
 	v1.Pos = { 0.5, -0.5f, 0.0f };
-	v1.Normal = { 0, 0, 1 };
+	v1.Normal = { 1, 1, 1 };
 	v1.TexCoord = { 0, 1 };
 	v2.Pos = { 0.5, 0.5f, 0.0f };
-	v2.Normal = { 0, 0, 1 };
+	v2.Normal = { 1, 1, 1 };
 	v2.TexCoord = { 1, 1 };
 	v3.Pos = { -0.5, 0.5f, 0.0f };
-	v3.Normal = { 0, 0, 1 };
+	v3.Normal = { 1, 1, 1 };
 	v3.TexCoord = { 1, 0 };
 	vertices.push_back(v0);
 	vertices.push_back(v1);
@@ -90,7 +90,6 @@ void QuadModel::Render() const
 	// Make the drawcall
 	dxdevice_context->DrawIndexed(nbr_indices, 0, 0);
 }
-
 
 OBJModel::OBJModel(
 	const std::string& objfile,

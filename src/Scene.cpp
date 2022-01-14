@@ -47,6 +47,7 @@ void OurTestScene::Init()
 
 	// Create objects
 	quad = new QuadModel(dxdevice, dxdevice_context);
+	cube = new Cube(dxdevice, dxdevice_context);
 	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", dxdevice, dxdevice_context);
 }
 
@@ -77,7 +78,11 @@ void OurTestScene::Update(
 	// Quad model-to-world transformation
 	Mquad = mat4f::translation(0, 0, 0) *			// No translation
 		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
-		mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%
+		mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%ии
+
+	Mcube = mat4f::translation(1, 1, 1) *			// little bit of translation
+		mat4f::rotation(angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
+		mat4f::scaling(2, 2, 2);				// Scale uniformly to 200%ии
 
 	// Sponza model-to-world transformation
 	Msponza = mat4f::translation(0, -5, 0) *		 // Move down 5 units
@@ -112,6 +117,10 @@ void OurTestScene::Render()
 	// Load matrices + the Quad's transformation to the device and render it
 	UpdateTransformationBuffer(Mquad, Mview, Mproj);
 	quad->Render();
+
+	// Load matrices + the Quad's transformation to the device and render it
+	UpdateTransformationBuffer(Mcube, Mview, Mproj);
+	cube->Render();
 
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);
