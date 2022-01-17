@@ -77,6 +77,7 @@ class OurTestScene : public Scene
 
 	QuadModel* quad;
 	OBJModel* sponza;
+	OBJModel* me;
 	Cube* cube;
 
 	//Model-to-world transformation matrices
@@ -85,6 +86,7 @@ class OurTestScene : public Scene
 	// Model-to-world transformation matrices
 	mat4f Msponza;
 	mat4f Mquad;
+	mat4f Mme;
 
 	// World-to-view matrix
 	mat4f Mview;

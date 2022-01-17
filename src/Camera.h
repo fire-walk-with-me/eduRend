@@ -11,6 +11,7 @@
 
 #include "vec\vec.h"
 #include "vec\mat.h"
+#include "InputHandler.h"
 
 using namespace linalg;
 
@@ -27,6 +28,7 @@ public:
 	// This range should be kept as tight as possibly to improve
 	// numerical precision in the z-buffer
 	float zNear, zFar;	
+	long mousedx, mousedy;
 						
 	vec3f position;
 
@@ -34,7 +36,7 @@ public:
 		float vfov,
 		float aspect,
 		float zNear,
-		float zFar):
+		float zFar) :
 		vfov(vfov), aspect(aspect), zNear(zNear), zFar(zFar)
 	{
 		position = {0.0f, 0.0f, 0.0f};
@@ -46,6 +48,8 @@ public:
 	{
 		position = p;
 	}
+
+	void rotate(InputHandler* input_handler);
 
 	// Move relatively
 	//

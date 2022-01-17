@@ -49,6 +49,7 @@ void OurTestScene::Init()
 	quad = new QuadModel(dxdevice, dxdevice_context);
 	cube = new Cube(dxdevice, dxdevice_context);
 	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", dxdevice, dxdevice_context);
+	me = new OBJModel("assets/me/meModel.obj", dxdevice, dxdevice_context);
 }
 
 //
@@ -80,7 +81,7 @@ void OurTestScene::Update(
 		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
 		mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%ии
 
-	Mcube = mat4f::translation(1, 1, 1) *			// little bit of translation
+	Mcube = mat4f::translation(-2, 1, 0) *			// little bit of translation
 		mat4f::rotation(angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
 		mat4f::scaling(2, 2, 2);				// Scale uniformly to 200%ии
 
@@ -88,6 +89,11 @@ void OurTestScene::Update(
 	Msponza = mat4f::translation(0, -5, 0) *		 // Move down 5 units
 		mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
 		mat4f::scaling(0.05f);						 // The scene is quite large so scale it down to 5%
+
+	Mme = mat4f::translation(-1.5f, 0, -15) *					// Move down 5 units
+		mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
+		mat4f::scaling(2,2,2);							 // The scene is quite large so scale it down to 5%
+
 
 	// Increment the rotation angle.
 	angle += angle_vel * dt;
@@ -116,11 +122,14 @@ void OurTestScene::Render()
 
 	// Load matrices + the Quad's transformation to the device and render it
 	UpdateTransformationBuffer(Mquad, Mview, Mproj);
-	quad->Render();
+	//quad->Render();
 
 	// Load matrices + the Quad's transformation to the device and render it
 	UpdateTransformationBuffer(Mcube, Mview, Mproj);
 	cube->Render();
+
+	UpdateTransformationBuffer(Mme, Mview, Mproj);
+	me->Render();
 
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);

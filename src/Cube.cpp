@@ -3,118 +3,183 @@
 Cube::Cube(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Model(dxdevice, dxdevice_context)
 {
 	//First
-	v00.Pos = { -0.5f, -0.5f, 0.0f };
+	v00.Pos = { 1, 1, 0 };
 	v00.Normal = { 0, 0, 1 };
 	v00.TexCoord = { 0, 0 };
-	v01.Pos = { 0.5, -0.5f, 0.0f };
+
+	v01.Pos = { 1, -1, 0 };
 	v01.Normal = { 0, 0, 1 };
 	v01.TexCoord = { 0, 1 };
-	v02.Pos = { 0.5, 0.5f, 0.0f };
+
+	v02.Pos = { -1, 1, 0 };
 	v02.Normal = { 0, 0, 1 };
 	v02.TexCoord = { 1, 1 };
-	v03.Pos = { -0.5, 0.5f, 0.0f };
+
+	v03.Pos = { -1, -1, 0 };
 	v03.Normal = { 0, 0, 1 };
 	v03.TexCoord = { 1, 0 };
 	//Second
-	v10.Pos = { 0.5f, 0.5f, 0.0f };
+	v10.Pos = { 1, 1, -2 };
 	v10.Normal = { 0, 0, 1 };
 	v10.TexCoord = { 0, 0 };
-	v11.Pos = { 0.5, 0.5f, 0.0f };
+
+	v11.Pos = { 1, -1, -2 };
 	v11.Normal = { 0, 0, 1 };
 	v11.TexCoord = { 0, 1 };
-	v12.Pos = { 0.5, 0.5f, 0.0f };
+
+	v12.Pos = { -1, 1, -2 };
 	v12.Normal = { 0, 0, 1 };
 	v12.TexCoord = { 1, 1 };
-	v13.Pos = { -0.5, 0.5f, 0.0f };
+
+	v13.Pos = { -1, -1, -2 };
 	v13.Normal = { 0, 0, 1 };
 	v13.TexCoord = { 1, 0 };
 	//Third
-	v20.Pos = { -0.5f, -0.5f, 0.0f };
+	v20.Pos = { 1, 1, -2};
 	v20.Normal = { 0, 0, 1 };
 	v20.TexCoord = { 0, 0 };
-	v21.Pos = { 0.5, -0.5f, 0.0f };
+
+	v21.Pos = { 1, -1, -2};
 	v21.Normal = { 0, 0, 1 };
 	v21.TexCoord = { 0, 1 };
-	v22.Pos = { 0.5, 0.5f, 0.0f };
+
+	v22.Pos = {1, 1, 0};
 	v22.Normal = { 0, 0, 1 };
 	v22.TexCoord = { 1, 1 };
-	v23.Pos = { -0.5, 0.5f, 0.0f };
+
+	v23.Pos = { 1, -1, 0 };
 	v23.Normal = { 0, 0, 1 };
 	v23.TexCoord = { 1, 0 };
 	//Forth
-	v30.Pos = { -0.5f, -0.5f, 0.0f };
+	v30.Pos = { 1, 1, -2 };
 	v30.Normal = { 0, 0, 1 };
 	v30.TexCoord = { 0, 0 };
-	v31.Pos = { 0.5, -0.5f, 0.0f };
+
+	v31.Pos = { -1, 1, -2 };
 	v31.Normal = { 0, 0, 1 };
 	v31.TexCoord = { 0, 1 };
-	v32.Pos = { 0.5, 0.5f, 0.0f };
+
+	v32.Pos = { 1, 1, 0 };
 	v32.Normal = { 0, 0, 1 };
 	v32.TexCoord = { 1, 1 };
-	v33.Pos = { -0.5, 0.5f, 0.0f };
+
+	v33.Pos = { -1, 1, 0 };
 	v33.Normal = { 0, 0, 1 };
 	v33.TexCoord = { 1, 0 };
+	//Fith
+	v40.Pos = { 1, -1, -2 };
+	v40.Normal = { 0, 0, 1 };
+	v40.TexCoord = { 0, 0 };
+
+	v41.Pos = { -1, -1, -2 };
+	v41.Normal = { 0, 0, 1 };
+	v41.TexCoord = { 0, 1 };
+
+	v42.Pos = { 1, -1, 0 };
+	v42.Normal = { 0, 0, 1 };
+	v42.TexCoord = { 1, 1 };
+
+	v43.Pos = { -1, -1, 0 };
+	v43.Normal = { 0, 0, 1 };
+	v43.TexCoord = { 1, 0 };
+	//Sixth
+	v50.Pos = { -1, -1, 0 };
+	v50.Normal = { 0, 0, 1 };
+	v50.TexCoord = { 0, 0 };
+
+	v51.Pos = { -1, 1, 0 };
+	v51.Normal = { 0, 0, 1 };
+	v51.TexCoord = { 0, 1 };
+
+	v52.Pos = { -1, -1, -2 };
+	v52.Normal = { 0, 0, 1 };
+	v52.TexCoord = { 1, 1 };
+
+	v53.Pos = { -1, 1, -2 };
+	v53.Normal = { 0, 0, 1 };
+	v53.TexCoord = { 1, 0 };
+
 
 	//First
 	vertices.push_back(v00);
 	vertices.push_back(v01);
 	vertices.push_back(v02);
 	vertices.push_back(v03);
-
 	//Second
 	vertices.push_back(v10);
 	vertices.push_back(v11);
 	vertices.push_back(v12);
 	vertices.push_back(v13);
-
 	//Third
 	vertices.push_back(v20);
 	vertices.push_back(v21);
 	vertices.push_back(v22);
 	vertices.push_back(v23);
-
 	//Forth
 	vertices.push_back(v30);
 	vertices.push_back(v31);
 	vertices.push_back(v32);
 	vertices.push_back(v33);
+	//Fith
+	vertices.push_back(v40);
+	vertices.push_back(v41);
+	vertices.push_back(v42);
+	vertices.push_back(v43);
+	//Sixth
+	vertices.push_back(v50);
+	vertices.push_back(v51);
+	vertices.push_back(v52);
+	vertices.push_back(v53);
 
-	// Populate the index array with two triangles
+	// Populate the index array with twelve triangles
 	// Triangle #1
-	indices.push_back(0);
-	indices.push_back(1);
 	indices.push_back(3);
-	// Triangle #2
 	indices.push_back(1);
+	indices.push_back(0);
+	// Triangle #2
+	indices.push_back(0);
 	indices.push_back(2);
 	indices.push_back(3);
-
 	// Triangle #3
 	indices.push_back(4);
 	indices.push_back(5);
 	indices.push_back(7);
 	// Triangle #4
-	indices.push_back(5);
-	indices.push_back(6);
 	indices.push_back(7);
-
+	indices.push_back(6);
+	indices.push_back(4);
 	// Tringale #5
-	indices.push_back(0);
-	indices.push_back(1);
-	indices.push_back(3);
+	indices.push_back(8);
+	indices.push_back(10);
+	indices.push_back(11);
 	// Triangle #6
-	indices.push_back(1);
-	indices.push_back(2);
-	indices.push_back(3);
-
+	indices.push_back(11);
+	indices.push_back(9);
+	indices.push_back(8);
 	// Triangle #7
-	indices.push_back(0);
-	indices.push_back(1);
-	indices.push_back(3);
+	indices.push_back(15);
+	indices.push_back(14);
+	indices.push_back(12);
 	// Triangle #8
-	indices.push_back(1);
-	indices.push_back(2);
-	indices.push_back(3);
+	indices.push_back(12);
+	indices.push_back(13);
+	indices.push_back(15);
+	// Triangle #9
+	indices.push_back(16);
+	indices.push_back(18);
+	indices.push_back(19);
+	// Triangle #10
+	indices.push_back(19);
+	indices.push_back(17);
+	indices.push_back(16);
+	// Triangle #11
+	indices.push_back(23);
+	indices.push_back(22);
+	indices.push_back(20);
+	// Triangle #12
+	indices.push_back(20);
+	indices.push_back(21);
+	indices.push_back(23);
 
 	// Vertex array descriptor
 	D3D11_BUFFER_DESC vbufferDesc = { 0 };
