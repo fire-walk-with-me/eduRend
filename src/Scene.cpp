@@ -48,8 +48,12 @@ void OurTestScene::Init()
 	// Create objects
 	quad = new QuadModel(dxdevice, dxdevice_context);
 	cube = new Cube(dxdevice, dxdevice_context);
-	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", dxdevice, dxdevice_context);
-	me = new OBJModel("assets/me/meModel.obj", dxdevice, dxdevice_context);
+	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", nullptr, dxdevice, dxdevice_context);
+	me = new OBJModel("assets/me/meModel.obj", nullptr, dxdevice, dxdevice_context);
+	sphere = new OBJModel("assets/sphere/sphere.obj", nullptr, dxdevice, dxdevice_context);
+	childSphere1 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context);
+	childSphere2 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context);
+	childSphere3 = new OBJModel("assets/sphere/sphere.obj", childSphere2, dxdevice, dxdevice_context);
 }
 
 //
@@ -61,14 +65,16 @@ void OurTestScene::Update(
 	InputHandler* input_handler)
 {
 	// Basic camera control
-	if (input_handler->IsKeyPressed(Keys::Up) || input_handler->IsKeyPressed(Keys::W))
+	if (input_handler->IsKeyPressed(Keys::W))
 		camera->move({ 0.0f, 0.0f, -camera_vel * dt });
-	if (input_handler->IsKeyPressed(Keys::Down) || input_handler->IsKeyPressed(Keys::S))
+	if (input_handler->IsKeyPressed(Keys::S))
 		camera->move({ 0.0f, 0.0f, camera_vel * dt });
-	if (input_handler->IsKeyPressed(Keys::Right) || input_handler->IsKeyPressed(Keys::D))
+	if (input_handler->IsKeyPressed(Keys::D))
 		camera->move({ camera_vel * dt, 0.0f, 0.0f });
-	if (input_handler->IsKeyPressed(Keys::Left) || input_handler->IsKeyPressed(Keys::A))
+	if (input_handler->IsKeyPressed(Keys::A))
 		camera->move({ -camera_vel * dt, 0.0f, 0.0f });
+	if ((GetKeyState(VK_LBUTTON) & 0x100) != 0)
+		camera->rotate(input_handler);
 
 	// Now set/update object transformations
 	// This can be done using any sequence of transformation matrices,
@@ -77,22 +83,29 @@ void OurTestScene::Update(
 	// via e.g. Mquad = linalg::mat4f_identity; 
 
 	// Quad model-to-world transformation
-	Mquad = mat4f::translation(0, 0, 0) *			// No translation
-		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
-		mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%ии
+	Mquad = mat4f::translation(0, 0, 0) *				// No translation
+			mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
+			mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%
 
-	Mcube = mat4f::translation(-2, 1, 0) *			// little bit of translation
-		mat4f::rotation(angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
-		mat4f::scaling(2, 2, 2);				// Scale uniformly to 200%ии
+	Mcube = mat4f::translation(-2, 1, -5) *				// little bit of translation
+			mat4f::rotation(angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
+			mat4f::scaling(1, 1, 1);					// Scale uniformly to 100%
 
 	// Sponza model-to-world transformation
-	Msponza = mat4f::translation(0, -5, 0) *		 // Move down 5 units
-		mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
-		mat4f::scaling(0.05f);						 // The scene is quite large so scale it down to 5%
+	Msponza = mat4f::translation(0, -5, 0) *				 // Move down 5 units
+		      mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) *   // Rotate pi/2 radians (90 degrees) around y
+			  mat4f::scaling(0.05f);						 // The scene is quite large so scale it down to 5%
 
-	Mme = mat4f::translation(-1.5f, 0, -15) *					// Move down 5 units
-		mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) * // Rotate pi/2 radians (90 degrees) around y
-		mat4f::scaling(2,2,2);							 // The scene is quite large so scale it down to 5%
+	Mme = mat4f::translation(-1.7f, 0, -30) *					// Move down 5 units
+		  mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) *		// Rotate pi/2 radians (90 degrees) around y
+		  mat4f::scaling(2,2,2);							 
+
+	//Msphere = mat4f::translation(-1.7f, 0, -15) *					// Move down 5 units
+	//		  mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) *		// Rotate pi/2 radians (90 degrees) around y
+	//		  mat4f::scaling(1, 1, 1);
+	sphere->setTransform(mat4f::translation(-1.7f, 0, -15), mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f), mat4f::scaling(1, 1, 1));
+
+	childSphere1->setTransform(childSphere1->getParentTranslation(), childSphere1->getParentRoation(), childSphere1->getParentScaling() * 2 );
 
 
 	// Increment the rotation angle.
@@ -130,6 +143,12 @@ void OurTestScene::Render()
 
 	UpdateTransformationBuffer(Mme, Mview, Mproj);
 	me->Render();
+
+	UpdateTransformationBuffer(sphere->getTransform(), Mview, Mproj);
+	sphere->Render();
+
+	UpdateTransformationBuffer(childSphere1->getTransform(), Mview, Mproj);
+	childSphere1->Render();
 
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);

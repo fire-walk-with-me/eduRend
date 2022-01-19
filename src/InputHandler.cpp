@@ -179,10 +179,10 @@ bool InputHandler::IsKeyPressed(Keys key){
 	return false;
 }
 
-LONG InputHandler::GetMouseDeltaX(){
+float InputHandler::GetMouseDeltaX(){
 	return mouseState.lX;
 }
 
-LONG InputHandler::GetMouseDeltaY(){
+float InputHandler::GetMouseDeltaY(){
 	return mouseState.lY;
 }

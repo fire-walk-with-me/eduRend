@@ -91,18 +91,15 @@ void QuadModel::Render() const
 	dxdevice_context->DrawIndexed(nbr_indices, 0, 0);
 }
 
-OBJModel::OBJModel(
-	const std::string& objfile,
-	ID3D11Device* dxdevice,
-	ID3D11DeviceContext* dxdevice_context)
-	: Model(dxdevice, dxdevice_context)
+OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context): Model(dxdevice, dxdevice_context)
 {
 	// Load the OBJ
 	OBJLoader* mesh = new OBJLoader();
 	mesh->Load(objfile);
 
-	// Load and organize indices in ranges per drawcall (material)
+	this->parent = parent;
 
+	// Load and organize indices in ranges per drawcall (material)
 	std::vector<unsigned> indices;
 	unsigned int i_ofs = 0;
 
@@ -177,6 +174,33 @@ OBJModel::OBJModel(
 	SAFE_DELETE(mesh);
 }
 
+mat4f OBJModel::getTransform() {
+	return this->transform;
+}
+
+mat4f OBJModel::getParentTransform() {
+	if (this->parent != nullptr)
+		return this->parent->getTransform();
+}
+
+mat4f OBJModel::getParentTranslation() {
+	return this->parent->translation;
+}
+
+mat4f OBJModel::getParentRoation() {
+	return this->parent->rotation;
+}
+
+mat4f OBJModel::getParentScaling() {
+	return this->parent->scaling;
+}
+
+void OBJModel::setTransform(mat4f translation, mat4f rotation, mat4f scaling) {
+	this->translation = translation;
+	this->rotation = rotation;
+	this->scaling = scaling;
+	this->transform = translation * rotation * scaling;
+}
 
 void OBJModel::Render() const
 {

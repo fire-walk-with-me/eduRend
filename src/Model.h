@@ -33,11 +33,7 @@ protected:
 
 public:
 
-	Model(
-		ID3D11Device* dxdevice, 
-		ID3D11DeviceContext* dxdevice_context) 
-		:	dxdevice(dxdevice),
-			dxdevice_context(dxdevice_context)
+	Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) :	dxdevice(dxdevice),dxdevice_context(dxdevice_context)
 	{ }
 
 	//
@@ -61,9 +57,7 @@ class QuadModel : public Model
 
 public:
 
-	QuadModel(
-		ID3D11Device* dx3ddevice,
-		ID3D11DeviceContext* dx3ddevice_context);
+	QuadModel(ID3D11Device* dx3ddevice, ID3D11DeviceContext* dx3ddevice_context);
 
 	virtual void Render() const;
 
@@ -91,12 +85,24 @@ class OBJModel : public Model
 
 public:
 
-	OBJModel(
-		const std::string& objfile,
-		ID3D11Device* dxdevice,
-		ID3D11DeviceContext* dxdevice_context);
+	OBJModel* parent;
+	mat4f transform;
+
+	mat4f translation;
+	mat4f rotation;
+	mat4f scaling;
+
+	OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context);
 
 	virtual void Render() const;
+
+	mat4f getTransform();
+	mat4f getParentTransform();
+	mat4f getParentTranslation();
+	mat4f getParentRoation();
+	mat4f getParentScaling();
+
+	void setTransform(mat4f translation, mat4f rotation, mat4f scaling);
 
 	~OBJModel();
 };

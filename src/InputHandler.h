@@ -42,6 +42,6 @@ public:
 	bool Update();
 	void GetMouseLocation(int&, int&);
 	bool IsKeyPressed(Keys);
-	LONG GetMouseDeltaX();
-	LONG GetMouseDeltaY();
+	float GetMouseDeltaX();
+	float GetMouseDeltaY();
 };
