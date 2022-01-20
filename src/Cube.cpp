@@ -2,100 +2,100 @@
 
 Cube::Cube(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Model(dxdevice, dxdevice_context)
 {
-	//First
-	v00.Pos = { 1, 1, 0 };
+	//First/Front
+	v00.Pos = { 1, 1, 1 };
 	v00.Normal = { 0, 0, 1 };
 	v00.TexCoord = { 0, 0 };
 
-	v01.Pos = { 1, -1, 0 };
+	v01.Pos = { 1, -1, 1 };
 	v01.Normal = { 0, 0, 1 };
 	v01.TexCoord = { 0, 1 };
 
-	v02.Pos = { -1, 1, 0 };
+	v02.Pos = { -1, 1, 1 };
 	v02.Normal = { 0, 0, 1 };
 	v02.TexCoord = { 1, 1 };
 
-	v03.Pos = { -1, -1, 0 };
+	v03.Pos = { -1, -1, 1 };
 	v03.Normal = { 0, 0, 1 };
 	v03.TexCoord = { 1, 0 };
-	//Second
-	v10.Pos = { 1, 1, -2 };
+	//Second/Back
+	v10.Pos = { 1, 1, -1 };
 	v10.Normal = { 0, 0, 1 };
 	v10.TexCoord = { 0, 0 };
 
-	v11.Pos = { 1, -1, -2 };
+	v11.Pos = { 1, -1, -1 };
 	v11.Normal = { 0, 0, 1 };
 	v11.TexCoord = { 0, 1 };
 
-	v12.Pos = { -1, 1, -2 };
+	v12.Pos = { -1, 1, -1 };
 	v12.Normal = { 0, 0, 1 };
 	v12.TexCoord = { 1, 1 };
 
-	v13.Pos = { -1, -1, -2 };
+	v13.Pos = { -1, -1, -1 };
 	v13.Normal = { 0, 0, 1 };
 	v13.TexCoord = { 1, 0 };
 	//Third
-	v20.Pos = { 1, 1, -2};
+	v20.Pos = { 1, 1, -1};
 	v20.Normal = { 0, 0, 1 };
 	v20.TexCoord = { 0, 0 };
 
-	v21.Pos = { 1, -1, -2};
+	v21.Pos = { 1, -1, -1};
 	v21.Normal = { 0, 0, 1 };
 	v21.TexCoord = { 0, 1 };
 
-	v22.Pos = {1, 1, 0};
+	v22.Pos = {1, 1, 1};
 	v22.Normal = { 0, 0, 1 };
 	v22.TexCoord = { 1, 1 };
 
-	v23.Pos = { 1, -1, 0 };
+	v23.Pos = { 1, -1, 1 };
 	v23.Normal = { 0, 0, 1 };
 	v23.TexCoord = { 1, 0 };
 	//Forth
-	v30.Pos = { 1, 1, -2 };
+	v30.Pos = { 1, 1, -1 };
 	v30.Normal = { 0, 0, 1 };
 	v30.TexCoord = { 0, 0 };
 
-	v31.Pos = { -1, 1, -2 };
+	v31.Pos = { -1, 1, -1 };
 	v31.Normal = { 0, 0, 1 };
 	v31.TexCoord = { 0, 1 };
 
-	v32.Pos = { 1, 1, 0 };
+	v32.Pos = { 1, 1, 1 };
 	v32.Normal = { 0, 0, 1 };
 	v32.TexCoord = { 1, 1 };
 
-	v33.Pos = { -1, 1, 0 };
+	v33.Pos = { -1, 1, 1 };
 	v33.Normal = { 0, 0, 1 };
 	v33.TexCoord = { 1, 0 };
 	//Fith
-	v40.Pos = { 1, -1, -2 };
+	v40.Pos = { 1, -1, -1 };
 	v40.Normal = { 0, 0, 1 };
 	v40.TexCoord = { 0, 0 };
 
-	v41.Pos = { -1, -1, -2 };
+	v41.Pos = { -1, -1, -1 };
 	v41.Normal = { 0, 0, 1 };
 	v41.TexCoord = { 0, 1 };
 
-	v42.Pos = { 1, -1, 0 };
+	v42.Pos = { 1, -1, 1 };
 	v42.Normal = { 0, 0, 1 };
 	v42.TexCoord = { 1, 1 };
 
-	v43.Pos = { -1, -1, 0 };
+	v43.Pos = { -1, -1, 1 };
 	v43.Normal = { 0, 0, 1 };
 	v43.TexCoord = { 1, 0 };
 	//Sixth
-	v50.Pos = { -1, -1, 0 };
+	v50.Pos = { -1, -1, 1 };
 	v50.Normal = { 0, 0, 1 };
 	v50.TexCoord = { 0, 0 };
 
-	v51.Pos = { -1, 1, 0 };
+	v51.Pos = { -1, 1, 1 };
 	v51.Normal = { 0, 0, 1 };
 	v51.TexCoord = { 0, 1 };
 
-	v52.Pos = { -1, -1, -2 };
+	v52.Pos = { -1, -1, -1 };
 	v52.Normal = { 0, 0, 1 };
 	v52.TexCoord = { 1, 1 };
 
-	v53.Pos = { -1, 1, -2 };
+	v53.Pos = { -1, 1, -1 };
 	v53.Normal = { 0, 0, 1 };
 	v53.TexCoord = { 1, 0 };
 

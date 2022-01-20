@@ -87,7 +87,7 @@ void OurTestScene::Update(
 			mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
 			mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%
 
-	Mcube = mat4f::translation(-2, 1, -5) *				// little bit of translation
+	Mcube = mat4f::translation(-2, -2, 5) *				// little bit of translation
 			mat4f::rotation(angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
 			mat4f::scaling(1, 1, 1);					// Scale uniformly to 100%
 
@@ -103,10 +103,12 @@ void OurTestScene::Update(
 	//Msphere = mat4f::translation(-1.7f, 0, -15) *					// Move down 5 units
 	//		  mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) *		// Rotate pi/2 radians (90 degrees) around y
 	//		  mat4f::scaling(1, 1, 1);
+
 	sphere->setTransform(mat4f::translation(-1.7f, 0, -15), mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f), mat4f::scaling(1, 1, 1));
 
-	childSphere1->setTransform(childSphere1->getParentTranslation(), childSphere1->getParentRoation(), childSphere1->getParentScaling() * 2 );
-
+	childSphere1->setTransform(childSphere1->getParentTransform() * mat4f::translation(-1.7f, 0, -5), mat4f::rotation(angle * 2, 0.0f, 1.0f, 0.0f), mat4f::scaling(0.3f, 0.3f, 0.3f));
+	childSphere2->setTransform(childSphere2->getParentTransform() * mat4f::translation(1.7f, 0, -6), mat4f::rotation(angle, 0.0f, 1.0f, 0.0f), mat4f::scaling(0.6f, 0.6f, 0.6f));
+	childSphere3->setTransform(childSphere3->getParentTransform() * mat4f::translation(-1.7f, 0, -5), mat4f::rotation(-angle / 2, 0.0f, 1.0f, 0.0f), mat4f::scaling(0.2f, 0.2f, 0.2f));
 
 	// Increment the rotation angle.
 	angle += angle_vel * dt;
@@ -116,7 +118,7 @@ void OurTestScene::Update(
 	if (fps_cooldown < 0.0)
 	{
 		std::cout << "fps " << (int)(1.0f / dt) << std::endl;
-//		printf("fps %i\n", (int)(1.0f / dt));
+		//printf("fps %i\n", (int)(1.0f / dt));
 		fps_cooldown = 2.0;
 	}
 }
@@ -149,6 +151,12 @@ void OurTestScene::Render()
 
 	UpdateTransformationBuffer(childSphere1->getTransform(), Mview, Mproj);
 	childSphere1->Render();
+
+	UpdateTransformationBuffer(childSphere2->getTransform(), Mview, Mproj);
+	childSphere2->Render();
+
+	UpdateTransformationBuffer(childSphere3->getTransform(), Mview, Mproj);
+	childSphere3->Render();
 
 	// Load matrices + Sponza's transformation to the device and render it
 	UpdateTransformationBuffer(Msponza, Mview, Mproj);
