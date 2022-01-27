@@ -51,6 +51,9 @@ mat4f Camera::get_WorldToViewMatrix()
 	viewToWorld = worldToView.inverse();
 
 	return  viewToWorld;
+}
 
-
+vec3f Camera::get_CameraPosition() 
+{
+	return position;
 }

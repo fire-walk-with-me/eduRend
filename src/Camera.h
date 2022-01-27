@@ -53,6 +53,7 @@ public:
 	// Move relatively
 	void move(const vec3f& v);
 
+	vec3f get_CameraPosition();
 
 	// Return World-to-View matrix for this camera
 	mat4f get_WorldToViewMatrix();

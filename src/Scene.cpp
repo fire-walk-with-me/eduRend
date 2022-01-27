@@ -1,34 +1,21 @@
 
 #include "Scene.h"
 
-Scene::Scene(
-	ID3D11Device* dxdevice,
-	ID3D11DeviceContext* dxdevice_context,
-	int window_width,
-	int window_height) :
-	dxdevice(dxdevice),
-	dxdevice_context(dxdevice_context),
-	window_width(window_width),
-	window_height(window_height)
+Scene::Scene(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context, int window_width, int window_height) : dxdevice(dxdevice), dxdevice_context(dxdevice_context), window_width(window_width), window_height(window_height)
 { }
 
-void Scene::WindowResize(
-	int window_width,
-	int window_height)
+void Scene::WindowResize(int window_width, int window_height)
 {
 	this->window_width = window_width;
 	this->window_height = window_height;
 }
 
-OurTestScene::OurTestScene(
-	ID3D11Device* dxdevice,
-	ID3D11DeviceContext* dxdevice_context,
-	int window_width,
-	int window_height) :
-	Scene(dxdevice, dxdevice_context, window_width, window_height)
+OurTestScene::OurTestScene( ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context, int window_width, int window_height) : Scene(dxdevice, dxdevice_context, window_width, window_height)
 { 
 	InitTransformationBuffer();
 	// + init other CBuffers
+	InitCameraAndLightBuffer();
+	InitColorAndShininessBuffer();
 }
 
 //
@@ -54,15 +41,15 @@ void OurTestScene::Init()
 	childSphere1 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context);
 	childSphere2 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context);
 	childSphere3 = new OBJModel("assets/sphere/sphere.obj", childSphere2, dxdevice, dxdevice_context);
+
+	lightSource = vec3f(0, 15, 0);
 }
 
 //
 // Called every frame
 // dt (seconds) is time elapsed since the previous frame
 //
-void OurTestScene::Update(
-	float dt,
-	InputHandler* input_handler)
+void OurTestScene::Update(float dt, InputHandler* input_handler)
 {
 	// Basic camera control
 	if (input_handler->IsKeyPressed(Keys::W))
@@ -121,6 +108,8 @@ void OurTestScene::Update(
 		//printf("fps %i\n", (int)(1.0f / dt));
 		fps_cooldown = 2.0;
 	}
+
+	UpdateCameraAndLightBuffer(lightSource, camera->get_CameraPosition());
 }
 
 //
@@ -130,6 +119,9 @@ void OurTestScene::Render()
 {
 	// Bind transformation_buffer to slot b0 of the VS
 	dxdevice_context->VSSetConstantBuffers(0, 1, &transformation_buffer);
+
+	dxdevice_context->PSSetConstantBuffers(0, 1, &cameraAndLight_buffer);
+	dxdevice_context->PSSetConstantBuffers(0, 1, &colorAndShininess_buffer);
 
 	// Obtain the matrices needed for rendering from the camera
 	Mview = camera->get_WorldToViewMatrix();
@@ -170,7 +162,8 @@ void OurTestScene::Release()
 	SAFE_DELETE(camera);
 
 	SAFE_RELEASE(transformation_buffer);
-	// + release other CBuffers
+	SAFE_RELEASE(cameraAndLight_buffer);
+	SAFE_RELEASE(colorAndShininess_buffer);
 }
 
 void OurTestScene::WindowResize(
@@ -196,10 +189,7 @@ void OurTestScene::InitTransformationBuffer()
 	ASSERT(hr = dxdevice->CreateBuffer(&MatrixBuffer_desc, nullptr, &transformation_buffer));
 }
 
-void OurTestScene::UpdateTransformationBuffer(
-	mat4f ModelToWorldMatrix,
-	mat4f WorldToViewMatrix,
-	mat4f ProjectionMatrix)
+void OurTestScene::UpdateTransformationBuffer(mat4f ModelToWorldMatrix, mat4f WorldToViewMatrix, mat4f ProjectionMatrix)
 {
 	// Map the resource buffer, obtain a pointer and then write our matrices to it
 	D3D11_MAPPED_SUBRESOURCE resource;
@@ -209,4 +199,52 @@ void OurTestScene::UpdateTransformationBuffer(
 	matrix_buffer_->WorldToViewMatrix = WorldToViewMatrix;
 	matrix_buffer_->ProjectionMatrix = ProjectionMatrix;
 	dxdevice_context->Unmap(transformation_buffer, 0);
+}
+
+void OurTestScene::InitCameraAndLightBuffer() 
+{
+	HRESULT hr;
+	D3D11_BUFFER_DESC MatrixBuffer_desc = { 0 };
+	MatrixBuffer_desc.Usage = D3D11_USAGE_DYNAMIC;
+	MatrixBuffer_desc.ByteWidth = sizeof(CameraAndLightBuffer);
+	MatrixBuffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	MatrixBuffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	MatrixBuffer_desc.MiscFlags = 0;
+	MatrixBuffer_desc.StructureByteStride = 0;
+	ASSERT(hr = dxdevice->CreateBuffer(&MatrixBuffer_desc, nullptr, &cameraAndLight_buffer));
+}
+
+void OurTestScene::UpdateCameraAndLightBuffer(vec3f cameraPosition, vec3f lightPosition) 
+{
+	D3D11_MAPPED_SUBRESOURCE resource;
+	dxdevice_context->Map(cameraAndLight_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	CameraAndLightBuffer* matrix_buffer_ = (CameraAndLightBuffer*)resource.pData;
+	matrix_buffer_->lightPosition = lightPosition;
+	matrix_buffer_->cameraPosition = cameraPosition;
+
+	dxdevice_context->Unmap(cameraAndLight_buffer, 0);
+}
+
+void OurTestScene::InitColorAndShininessBuffer() 
+{
+	HRESULT hr;
+	D3D11_BUFFER_DESC MatrixBuffer_desc = { 0 };
+	MatrixBuffer_desc.Usage = D3D11_USAGE_DYNAMIC;
+	MatrixBuffer_desc.ByteWidth = sizeof(ColorAndShininessBuffer);
+	MatrixBuffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	MatrixBuffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	MatrixBuffer_desc.MiscFlags = 0;
+	MatrixBuffer_desc.StructureByteStride = 0;
+	ASSERT(hr = dxdevice->CreateBuffer(&MatrixBuffer_desc, nullptr, &colorAndShininess_buffer));
+}
+
+void OurTestScene::UpdateColorAndShininessBuffer() 
+{
+	D3D11_MAPPED_SUBRESOURCE resource;
+	dxdevice_context->Map(colorAndShininess_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	ColorAndShininessBuffer* matrix_buffer_ = (ColorAndShininessBuffer*)resource.pData;
+	//matrix_buffer_->ModelToWorldMatrix = ModelToWorldMatrix;
+	//matrix_buffer_->WorldToViewMatrix = WorldToViewMatrix;
+	//matrix_buffer_->ProjectionMatrix = ProjectionMatrix;
+	dxdevice_context->Unmap(colorAndShininess_buffer, 0);
 }

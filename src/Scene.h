@@ -57,6 +57,9 @@ class OurTestScene : public Scene
 	// CBuffer for transformation matrices
 	ID3D11Buffer* transformation_buffer = nullptr;
 	// + other CBuffers
+	ID3D11Buffer* cameraAndLight_buffer = nullptr;
+	ID3D11Buffer* colorAndShininess_buffer = nullptr;
+	
 
 	// 
 	// CBuffer client-side definitions
@@ -68,6 +71,18 @@ class OurTestScene : public Scene
 		mat4f ModelToWorldMatrix;
 		mat4f WorldToViewMatrix;
 		mat4f ProjectionMatrix;
+	};
+
+	struct CameraAndLightBuffer 
+	{
+		vec3f cameraPosition;
+		vec3f lightPosition;
+	};
+
+	struct ColorAndShininessBuffer 
+	{
+
+
 	};
 
 	//
@@ -90,7 +105,9 @@ class OurTestScene : public Scene
 	// Model-to-world transformation matrices
 	mat4f Msponza;
 	mat4f Mquad;
+
 	mat4f Mme;
+
 	mat4f Msphere;
 	mat4f MchildSphere1;
 	mat4f MchildSphere2;
@@ -106,34 +123,29 @@ class OurTestScene : public Scene
 	float angle_vel = fPI / 2;	// ...and its velocity (radians/sec)
 	float camera_vel = 5.0f;	// Camera movement velocity in units/s
 	float fps_cooldown = 0;
+	vec3f lightSource;
 
 	void InitTransformationBuffer();
+	void InitCameraAndLightBuffer();
+	void InitColorAndShininessBuffer();
 
-	void UpdateTransformationBuffer(
-		mat4f ModelToWorldMatrix,
-		mat4f WorldToViewMatrix,
-		mat4f ProjectionMatrix);
+	void UpdateTransformationBuffer(mat4f ModelToWorldMatrix, mat4f WorldToViewMatrix, mat4f ProjectionMatrix);
+
+	void UpdateCameraAndLightBuffer(vec3f cameraPosition, vec3f lightPosition);
+	void UpdateColorAndShininessBuffer();
 
 public:
-	OurTestScene(
-		ID3D11Device* dxdevice,
-		ID3D11DeviceContext* dxdevice_context,
-		int window_width,
-		int window_height);
+	OurTestScene(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context, int window_width, int window_height);
 
 	void Init() override;
 
-	void Update(
-		float dt,
-		InputHandler* input_handler) override;
+	void Update(float dt, InputHandler* input_handler) override;
 
 	void Render() override;
 
 	void Release() override;
 
-	void WindowResize(
-		int window_width,
-		int window_height) override;
+	void WindowResize(int window_width, int window_height) override;
 };
 
 #endif
