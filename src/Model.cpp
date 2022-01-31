@@ -6,10 +6,12 @@
 
 #include "Model.h"
 
-QuadModel::QuadModel(
-	ID3D11Device* dxdevice,
-	ID3D11DeviceContext* dxdevice_context)
-	: Model(dxdevice, dxdevice_context)
+Model::Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : dxdevice(dxdevice), dxdevice_context(dxdevice_context)
+{
+	InitColorAndShininessBuffer();
+}
+
+QuadModel::QuadModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Model(dxdevice, dxdevice_context)
 {
 	// Vertex and index arrays
 	// Once their data is loaded to GPU buffers, they are not needed anymore
@@ -51,28 +53,28 @@ QuadModel::QuadModel(
 	vbufferDesc.CPUAccessFlags = 0;
 	vbufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vbufferDesc.MiscFlags = 0;
-	vbufferDesc.ByteWidth = (UINT)(vertices.size()*sizeof(Vertex));
+	vbufferDesc.ByteWidth = (UINT)(vertices.size() * sizeof(Vertex));
 	// Data resource
 	D3D11_SUBRESOURCE_DATA vdata;
 	vdata.pSysMem = &vertices[0];
 	// Create vertex buffer on device using descriptor & data
 	const HRESULT vhr = dxdevice->CreateBuffer(&vbufferDesc, &vdata, &vertex_buffer);
 	SETNAME(vertex_buffer, "VertexBuffer");
-    
+
 	//  Index array descriptor
 	D3D11_BUFFER_DESC ibufferDesc = { 0 };
 	ibufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibufferDesc.CPUAccessFlags = 0;
 	ibufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	ibufferDesc.MiscFlags = 0;
-	ibufferDesc.ByteWidth = (UINT)(indices.size()*sizeof(unsigned));
+	ibufferDesc.ByteWidth = (UINT)(indices.size() * sizeof(unsigned));
 	// Data resource
 	D3D11_SUBRESOURCE_DATA idata;
 	idata.pSysMem = &indices[0];
 	// Create index buffer on device using descriptor & data
 	const HRESULT ihr = dxdevice->CreateBuffer(&ibufferDesc, &idata, &index_buffer);
 	SETNAME(index_buffer, "IndexBuffer");
-    
+
 	nbr_indices = (unsigned int)indices.size();
 }
 
@@ -91,7 +93,7 @@ void QuadModel::Render() const
 	dxdevice_context->DrawIndexed(nbr_indices, 0, 0);
 }
 
-OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context): Model(dxdevice, dxdevice_context)
+OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Model(dxdevice, dxdevice_context)
 {
 	// Load the OBJ
 	OBJLoader* mesh = new OBJLoader();
@@ -123,28 +125,28 @@ OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* d
 	vbufferDesc.CPUAccessFlags = 0;
 	vbufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vbufferDesc.MiscFlags = 0;
-	vbufferDesc.ByteWidth = (UINT)(mesh->vertices.size()*sizeof(Vertex));
+	vbufferDesc.ByteWidth = (UINT)(mesh->vertices.size() * sizeof(Vertex));
 	// Data resource
 	D3D11_SUBRESOURCE_DATA vdata;
 	vdata.pSysMem = &(mesh->vertices)[0];
 	// Create vertex buffer on device using descriptor & data
 	HRESULT vhr = dxdevice->CreateBuffer(&vbufferDesc, &vdata, &vertex_buffer);
 	SETNAME(vertex_buffer, "VertexBuffer");
-    
+
 	// Index array descriptor
 	D3D11_BUFFER_DESC ibufferDesc = { 0 };
 	ibufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibufferDesc.CPUAccessFlags = 0;
 	ibufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	ibufferDesc.MiscFlags = 0;
-	ibufferDesc.ByteWidth = (UINT)(indices.size()*sizeof(unsigned));
+	ibufferDesc.ByteWidth = (UINT)(indices.size() * sizeof(unsigned));
 	// Data resource
 	D3D11_SUBRESOURCE_DATA idata;
 	idata.pSysMem = &indices[0];
 	// Create index buffer on device using descriptor & data
 	HRESULT ihr = dxdevice->CreateBuffer(&ibufferDesc, &idata, &index_buffer);
 	SETNAME(index_buffer, "IndexBuffer");
-    
+
 	// Copy materials from mesh
 	append_materials(mesh->materials);
 
@@ -160,9 +162,9 @@ OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* d
 
 			hr = LoadTextureFromFile(
 				dxdevice,
-				mtl.Kd_texture_filename.c_str(), 
+				mtl.Kd_texture_filename.c_str(),
 				&mtl.diffuse_texture);
-			std::cout << "\t" << mtl.Kd_texture_filename 
+			std::cout << "\t" << mtl.Kd_texture_filename
 				<< (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 		}
 
@@ -172,6 +174,32 @@ OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* d
 	std::cout << "Done." << std::endl;
 
 	SAFE_DELETE(mesh);
+}
+
+void Model::InitColorAndShininessBuffer()
+{
+	HRESULT hr;
+	D3D11_BUFFER_DESC MatrixBuffer_desc = { 0 };
+	MatrixBuffer_desc.Usage = D3D11_USAGE_DYNAMIC;
+	MatrixBuffer_desc.ByteWidth = sizeof(ColorAndShininessBuffer);
+	MatrixBuffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	MatrixBuffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	MatrixBuffer_desc.MiscFlags = 0;
+	MatrixBuffer_desc.StructureByteStride = 0;
+	ASSERT(hr = dxdevice->CreateBuffer(&MatrixBuffer_desc, nullptr, &colorAndShininess_buffer));
+}
+
+void Model::UpdateColorAndShininessBuffer(vec4f ambient, vec4f diffuse, vec4f specular, vec4f shininess) const
+{
+	D3D11_MAPPED_SUBRESOURCE resource;
+	dxdevice_context->Map(colorAndShininess_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	ColorAndShininessBuffer* matrix_buffer_ = (ColorAndShininessBuffer*)resource.pData;
+	//matrix_buffer_->materials = ambient + diffuse + specular * shininess;
+	matrix_buffer_->ambient = ambient;
+	matrix_buffer_->diffuse = diffuse;
+	matrix_buffer_->specular = specular;
+	matrix_buffer_->shininess = shininess;
+	dxdevice_context->Unmap(colorAndShininess_buffer, 0);
 }
 
 mat4f OBJModel::getTransform() {
@@ -211,6 +239,7 @@ void OBJModel::Render() const
 
 	// Bind index buffer
 	dxdevice_context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R32_UINT, 0);
+	dxdevice_context->PSSetConstantBuffers(1, 1, &colorAndShininess_buffer);
 
 	// Iterate drawcalls
 	for (auto& irange : index_ranges)
@@ -225,6 +254,12 @@ void OBJModel::Render() const
 		// Make the drawcall
 		dxdevice_context->DrawIndexed(irange.size, irange.start, 0);
 	}
+
+	for (Material material : materials)
+	{
+		UpdateColorAndShininessBuffer(material.Ka.xyz1(),  material.Kd.xyz1(),  material.Ks.xyz1(), vec4f(0,0,0, 0.5f));
+	}
+
 }
 
 OBJModel::~OBJModel()

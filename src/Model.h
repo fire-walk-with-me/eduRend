@@ -30,24 +30,35 @@ protected:
 	// Pointers to the class' vertex & index arrays
 	ID3D11Buffer* vertex_buffer = nullptr;
 	ID3D11Buffer* index_buffer = nullptr;
+	ID3D11Buffer* colorAndShininess_buffer = nullptr;
 
 public:
 
-	Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) :	dxdevice(dxdevice),dxdevice_context(dxdevice_context)
-	{ }
-
+	Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context);
+	
 	//
 	// Abstract render method: must be implemented by derived classes
 	//
 	virtual void Render() const = 0;
 
-	//
-	// Destructor
-	//
+
+	void InitColorAndShininessBuffer();
+	void UpdateColorAndShininessBuffer(vec4f ambient, vec4f diffuse, vec4f specular, vec4f shininess) const;
+
+	struct ColorAndShininessBuffer
+	{
+		//vec4f materials;
+		vec4f ambient;
+		vec4f diffuse;
+		vec4f specular;
+		vec4f shininess;
+	};
+
 	virtual ~Model()
 	{ 
 		SAFE_RELEASE(vertex_buffer);
 		SAFE_RELEASE(index_buffer);
+		SAFE_RELEASE(colorAndShininess_buffer);
 	}
 };
 
@@ -82,6 +93,8 @@ class OBJModel : public Model
 	{
 		materials.insert(materials.end(), mtl_vec.begin(), mtl_vec.end());
 	}
+
+
 
 public:
 

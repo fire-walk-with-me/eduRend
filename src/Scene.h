@@ -58,7 +58,7 @@ class OurTestScene : public Scene
 	ID3D11Buffer* transformation_buffer = nullptr;
 	// + other CBuffers
 	ID3D11Buffer* cameraAndLight_buffer = nullptr;
-	ID3D11Buffer* colorAndShininess_buffer = nullptr;
+	
 	
 
 	// 
@@ -75,14 +75,8 @@ class OurTestScene : public Scene
 
 	struct CameraAndLightBuffer 
 	{
-		vec3f cameraPosition;
-		vec3f lightPosition;
-	};
-
-	struct ColorAndShininessBuffer 
-	{
-
-
+		vec4f cameraPosition;
+		vec4f lightPosition;
 	};
 
 	//
@@ -123,16 +117,16 @@ class OurTestScene : public Scene
 	float angle_vel = fPI / 2;	// ...and its velocity (radians/sec)
 	float camera_vel = 5.0f;	// Camera movement velocity in units/s
 	float fps_cooldown = 0;
-	vec3f lightSource;
+
+	vec4f lightSource;
 
 	void InitTransformationBuffer();
 	void InitCameraAndLightBuffer();
-	void InitColorAndShininessBuffer();
 
 	void UpdateTransformationBuffer(mat4f ModelToWorldMatrix, mat4f WorldToViewMatrix, mat4f ProjectionMatrix);
 
-	void UpdateCameraAndLightBuffer(vec3f cameraPosition, vec3f lightPosition);
-	void UpdateColorAndShininessBuffer();
+	void UpdateCameraAndLightBuffer(vec4f cameraPosition, vec4f lightPosition);
+
 
 public:
 	OurTestScene(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context, int window_width, int window_height);
