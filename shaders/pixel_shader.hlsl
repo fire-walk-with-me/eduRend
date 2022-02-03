@@ -21,25 +21,29 @@ cbuffer CameraAndLightBuffer : register(b0)
 
 cbuffer ColorAndShininessBuffer : register(b1)
 {
-	//float4x4 materials;
 	float4 ambient;
 	float4 diffuse;
 	float4 specular;
-	float4 shininess;
+	float shininess;
 };
 
 float4 PS_main(PSIn input) : SV_Target
 {
 	float3 light = normalize(lightPosition - input.WorldPos);
-	float3 reflection = normalize(reflect(light, input.Normal));
+	float3 reflection = normalize(reflect(-light, input.Normal));
 	float3 view = normalize(cameraPosition - input.WorldPos);
 
-	return float4(
-			ambient.xyz +												//ambient
-			mul(diffuse.xyz, light * input.Normal) +					//diffuse
-			mul(specular.xyz, pow(reflection * view, 1.0f)),			//specular
-			1);															//opacity
+	float3 A = ambient.xyz * 0.5f;
+	float3 D = mul(diffuse.xyz, dot(light, input.Normal));
+	float3 S = mul(specular.xyz, pow(max(dot(reflection, view), 0), 200.0f));
 
+	return float4(A + D + S, 1);
+
+	//return float4(
+	//	ambient.xyz +												//ambient
+	//	mul(diffuse.xyz, light * input.Normal) +					//diffuse
+	//	mul(specular.xyz, pow(max(reflection * view, 0), 200.0f)),	//specular
+	//	1);															//opacity
 
 	// Debug shading #1: map and return normal as a color, i.e. from [-1,1]->[0,1] per component
 	// The 4:th component is opacity and should be = 1
@@ -47,7 +51,4 @@ float4 PS_main(PSIn input) : SV_Target
 	
 	// Debug shading #2: map and return texture coordinates as a color (blue = 0)
 	//return float4(input.TexCoord, 0, 1);
-
-	//Debug shading #3: map and return materials as color
-	//return float4(input.Color, 0, 1);
 }

@@ -251,15 +251,16 @@ void OBJModel::Render() const
 		dxdevice_context->PSSetShaderResources(0, 1, &mtl.diffuse_texture.texture_SRV);
 		// + bind other textures here, e.g. a normal map, to appropriate slots
 
+		UpdateColorAndShininessBuffer(mtl.Ka.xyz1(), mtl.Kd.xyz1(), mtl.Ks.xyz1(), vec4f(0, 0, 0, 0.5f));
+
 		// Make the drawcall
 		dxdevice_context->DrawIndexed(irange.size, irange.start, 0);
 	}
 
-	for (Material material : materials)
+	/*for (Material material : materials)
 	{
 		UpdateColorAndShininessBuffer(material.Ka.xyz1(),  material.Kd.xyz1(),  material.Ks.xyz1(), vec4f(0,0,0, 0.5f));
-	}
-
+	}*/
 }
 
 OBJModel::~OBJModel()

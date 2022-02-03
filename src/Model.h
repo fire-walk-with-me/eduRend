@@ -47,7 +47,6 @@ public:
 
 	struct ColorAndShininessBuffer
 	{
-		//vec4f materials;
 		vec4f ambient;
 		vec4f diffuse;
 		vec4f specular;
