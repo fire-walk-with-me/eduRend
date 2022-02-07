@@ -1,4 +1,8 @@
 #include "Cube.h"
+#include <fstream>
+#include <algorithm>
+#include "vec/vec.h"
+#include "parseutil.h"
 
 Cube::Cube(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Model(dxdevice, dxdevice_context)
 {
@@ -211,7 +215,28 @@ Cube::Cube(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Mode
 	SETNAME(index_buffer, "IndexBuffer");
 
 	nbr_indices = (unsigned int)indices.size();
+
+	materials.push_back(defaultMaterial);
+
+	// Copy materials from mesh
+	append_materials(this->materials);
+
+	for (auto& mtl : materials)
+	{
+		HRESULT hr;
+
+		// Load Diffuse texture
+		if (mtl.Kd_texture_filename.size()) {
+
+			hr = LoadTextureFromFile(dxdevice, mtl.Kd_texture_filename.c_str(), &mtl.diffuse_texture);
+			std::cout << "\t" << mtl.Kd_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+		}
+	}
+
+	dxdevice_context->PSSetShaderResources(0, 1, &mtl.diffuse_texture_SRV);
 }
+
+
 
 void Cube::Render() const
 {

@@ -28,24 +28,14 @@ struct Texture
 /// <summary>
 /// Load a texture from file.
 /// </summary>
-HRESULT LoadTextureFromFile(
-	ID3D11Device* dxdevice,
-	const char* filename,
-	Texture* texture_out);
+HRESULT LoadTextureFromFile(ID3D11Device* dxdevice, const char* filename, Texture* texture_out);
 
 /// <summary>
 /// Load a texture from file. A mip map is generated if 
 /// dxdevice_context is not null and valid.
 /// </summary>
-HRESULT LoadTextureFromFile(
-	ID3D11Device* dxdevice,
-	ID3D11DeviceContext* dxdevice_context,
-	const char* filename,
-	Texture* texture_out);
+HRESULT LoadTextureFromFile(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context, const char* filename, Texture* texture_out);
 
-HRESULT LoadCubeTextureFromFile(
-	ID3D11Device* dxdevice,
-	const char** filenames,
-	Texture* texture_out);
+HRESULT LoadCubeTextureFromFile(ID3D11Device* dxdevice, const char** filenames, Texture* texture_out);
 
 #endif

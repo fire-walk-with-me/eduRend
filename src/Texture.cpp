@@ -9,23 +9,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-HRESULT LoadTextureFromFile(
-    ID3D11Device* dxdevice,
-    const char* filename,
-    Texture* texture_out)
+HRESULT LoadTextureFromFile(ID3D11Device* dxdevice, const char* filename, Texture* texture_out)
 {
-    return LoadTextureFromFile(
-        dxdevice,
-        nullptr,
-        filename,
-        texture_out);
+    return LoadTextureFromFile(dxdevice, nullptr, filename, texture_out);
 }
 
-HRESULT LoadTextureFromFile(
-    ID3D11Device* dxdevice,
-    ID3D11DeviceContext* dxdevice_context,
-    const char* filename,
-    Texture* texture_out)
+HRESULT LoadTextureFromFile(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context, const char* filename, Texture* texture_out)
 {
     int mipLevels = 1;
     int mipLevels_srv = 1;
@@ -87,13 +76,7 @@ HRESULT LoadTextureFromFile(
     SETNAME(pTexture, "TextureData");
 
     if (useMipMap)
-        dxdevice_context->UpdateSubresource(
-            pTexture,
-            0,
-            0,
-            image_data,
-            subResource.SysMemPitch,
-            0);
+        dxdevice_context->UpdateSubresource(pTexture, 0, 0, image_data, subResource.SysMemPitch, 0);
 
     // Create texture view
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -125,10 +108,7 @@ HRESULT LoadTextureFromFile(
     return S_OK;
 }
 
-HRESULT LoadCubeTextureFromFile(
-    ID3D11Device* dxdevice,
-    const char** filenames,
-    Texture* texture_out)
+HRESULT LoadCubeTextureFromFile(ID3D11Device* dxdevice, const char** filenames, Texture* texture_out)
 {
     HRESULT hr;
 

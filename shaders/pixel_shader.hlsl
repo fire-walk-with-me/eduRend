@@ -24,7 +24,12 @@ cbuffer ColorAndShininessBuffer : register(b1)
 	float4 ambient;
 	float4 diffuse;
 	float4 specular;
-	float shininess;
+	float1 shininess;
+};
+
+SamplerState texSampler : register(s0)
+{
+
 };
 
 float4 PS_main(PSIn input) : SV_Target
