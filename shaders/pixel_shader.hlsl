@@ -27,19 +27,18 @@ cbuffer ColorAndShininessBuffer : register(b1)
 	float1 shininess;
 };
 
-SamplerState texSampler : register(s0)
-{
-
-};
+SamplerState texSampler : register(s0);
 
 float4 PS_main(PSIn input) : SV_Target
 {
+	float4 diffuseTexture = texDiffuse.Sample(texSampler, input.TexCoord);
+
 	float3 light = normalize(lightPosition - input.WorldPos);
 	float3 reflection = normalize(reflect(-light, input.Normal));
 	float3 view = normalize(cameraPosition - input.WorldPos);
 
-	float3 A = ambient.xyz * 0.5f;
-	float3 D = mul(diffuse.xyz, dot(light, input.Normal));
+	float3 A = ambient.xyz * 0.1f;
+	float3 D = mul(diffuseTexture.xyz, dot(light, input.Normal));
 	float3 S = mul(specular.xyz, pow(max(dot(reflection, view), 0), 200.0f));
 
 	return float4(A + D + S, 1);

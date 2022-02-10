@@ -15,6 +15,7 @@ OurTestScene::OurTestScene( ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevic
 	InitTransformationBuffer();
 	// + init other CBuffers
 	InitCameraAndLightBuffer();
+	InitTexSampler();
 }
 
 //
@@ -62,6 +63,7 @@ void OurTestScene::Update(float dt, InputHandler* input_handler)
 		camera->move({ -camera_vel * dt, 0.0f, 0.0f });
 	if ((GetKeyState(VK_LBUTTON) & 0x100) != 0)
 		camera->rotate(input_handler);
+	SwapFilter(input_handler);
 
 	// Now set/update object transformations
 	// This can be done using any sequence of transformation matrices,
@@ -108,11 +110,10 @@ void OurTestScene::Update(float dt, InputHandler* input_handler)
 	{
 		std::cout << "fps " << (int)(1.0f / dt) << std::endl;
 		//printf("fps %i\n", (int)(1.0f / dt));
-		fps_cooldown = 2.0;
+		fps_cooldown = 5.0;
 	}
 
 	UpdateCameraAndLightBuffer(camera->get_CameraPosition().xyz0(), lightSource);
-	
 }
 
 //
@@ -125,6 +126,8 @@ void OurTestScene::Render()
 
 	dxdevice_context->PSSetConstantBuffers(0, 1, &cameraAndLight_buffer);
 	//dxdevice_context->PSSetConstantBuffers(0, 1, &colorAndShininess_buffer);
+
+	dxdevice_context->PSSetSamplers(0, 1, &tex_sampler[filterVaule]);
 
 	// Obtain the matrices needed for rendering from the camera
 	Mview = camera->get_WorldToViewMatrix();
@@ -229,4 +232,53 @@ void OurTestScene::UpdateCameraAndLightBuffer(vec4f cameraPosition, vec4f lightP
 	matrix_buffer_->lightPosition = lightPosition;
 	matrix_buffer_->cameraPosition = cameraPosition;
 	dxdevice_context->Unmap(cameraAndLight_buffer, 0);
+}
+
+void OurTestScene::InitTexSampler() 
+{
+	HRESULT hr;
+	D3D11_SAMPLER_DESC samplerdesc =
+	{
+		D3D11_FILTER_MAXIMUM_MIN_MAG_MIP_POINT,
+		D3D11_TEXTURE_ADDRESS_MIRROR,
+		D3D11_TEXTURE_ADDRESS_MIRROR,
+		D3D11_TEXTURE_ADDRESS_MIRROR,
+		0.0f,
+		16,
+		D3D11_COMPARISON_NEVER,
+		{1.0f, 1.0f, 1.0f, 1.0f},
+		-FLT_MAX,
+		FLT_MAX
+	};
+	ASSERT(hr = dxdevice->CreateSamplerState(&samplerdesc, &tex_sampler[0]));
+
+	samplerdesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	ASSERT(hr = dxdevice->CreateSamplerState(&samplerdesc, &tex_sampler[1]));
+
+	samplerdesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerdesc.MaxAnisotropy = 16;
+	ASSERT(hr = dxdevice->CreateSamplerState(&samplerdesc, &tex_sampler[2]));
+
+	samplerdesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerdesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerdesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerdesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerdesc.MaxAnisotropy = 16;
+	ASSERT(hr = dxdevice->CreateSamplerState(&samplerdesc, &tex_sampler[3]));
+
+	samplerdesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerdesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerdesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerdesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerdesc.MaxAnisotropy = 16;
+	ASSERT(hr = dxdevice->CreateSamplerState(&samplerdesc, &tex_sampler[4]));
+}
+
+void OurTestScene::SwapFilter(InputHandler* input) 
+{
+	if (input->IsKeyPressed(Keys::D1)) filterVaule = 0;
+	else if (input->IsKeyPressed(Keys::D2)) filterVaule = 1;
+	else if (input->IsKeyPressed(Keys::D3)) filterVaule = 2;
+	else if (input->IsKeyPressed(Keys::D4)) filterVaule = 3;
+	else if (input->IsKeyPressed(Keys::D5)) filterVaule = 4;
 }

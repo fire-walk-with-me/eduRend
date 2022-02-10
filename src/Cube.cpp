@@ -39,15 +39,15 @@ Cube::Cube(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Mode
 	v13.Normal = { 0, 0, 1 };
 	v13.TexCoord = { 1, 0 };
 	//Third
-	v20.Pos = { 1, 1, -1};
+	v20.Pos = { 1, 1, -1 };
 	v20.Normal = { 0, 0, 1 };
 	v20.TexCoord = { 0, 0 };
 
-	v21.Pos = { 1, -1, -1};
+	v21.Pos = { 1, -1, -1 };
 	v21.Normal = { 0, 0, 1 };
 	v21.TexCoord = { 0, 1 };
 
-	v22.Pos = {1, 1, 1};
+	v22.Pos = { 1, 1, 1 };
 	v22.Normal = { 0, 0, 1 };
 	v22.TexCoord = { 1, 1 };
 
@@ -215,28 +215,16 @@ Cube::Cube(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Mode
 	SETNAME(index_buffer, "IndexBuffer");
 
 	nbr_indices = (unsigned int)indices.size();
+	HRESULT hr;
 
-	materials.push_back(defaultMaterial);
-
-	// Copy materials from mesh
-	append_materials(this->materials);
-
-	for (auto& mtl : materials)
+	// Load Diffuse texture
+	if (defaultMaterial.Kd_texture_filename.size())
 	{
-		HRESULT hr;
-
-		// Load Diffuse texture
-		if (mtl.Kd_texture_filename.size()) {
-
-			hr = LoadTextureFromFile(dxdevice, mtl.Kd_texture_filename.c_str(), &mtl.diffuse_texture);
-			std::cout << "\t" << mtl.Kd_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
-		}
+		hr = LoadTextureFromFile(dxdevice, dxdevice_context, defaultMaterial.Kd_texture_filename.c_str(), &defaultMaterial.diffuse_texture);
+		std::cout << "\t" << defaultMaterial.Kd_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 	}
 
-	dxdevice_context->PSSetShaderResources(0, 1, &mtl.diffuse_texture_SRV);
 }
-
-
 
 void Cube::Render() const
 {
@@ -250,9 +238,13 @@ void Cube::Render() const
 
 	// Make the drawcall
 	dxdevice_context->DrawIndexed(nbr_indices, 0, 0);
+
+	dxdevice_context->PSSetShaderResources(0, 1, &defaultMaterial.diffuse_texture.texture_SRV);
 }
 
 Cube::~Cube()
 {
-
+	SAFE_RELEASE(defaultMaterial.diffuse_texture.texture_SRV);
+	SAFE_RELEASE(vertex_buffer);
+	SAFE_RELEASE(index_buffer);
 }

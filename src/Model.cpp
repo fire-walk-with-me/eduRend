@@ -159,7 +159,7 @@ OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* d
 		// Load Diffuse texture
 		if (mtl.Kd_texture_filename.size()) {
 
-			hr = LoadTextureFromFile(dxdevice, mtl.Kd_texture_filename.c_str(), &mtl.diffuse_texture);
+			hr = LoadTextureFromFile(dxdevice, dxdevice_context, mtl.Kd_texture_filename.c_str(), &mtl.diffuse_texture);
 			std::cout << "\t" << mtl.Kd_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 		}
 

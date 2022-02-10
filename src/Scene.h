@@ -59,7 +59,7 @@ class OurTestScene : public Scene
 	// + other CBuffers
 	ID3D11Buffer* cameraAndLight_buffer = nullptr;
 	
-	
+	ID3D11SamplerState* tex_sampler[5];
 
 	// 
 	// CBuffer client-side definitions
@@ -118,14 +118,19 @@ class OurTestScene : public Scene
 	float camera_vel = 5.0f;	// Camera movement velocity in units/s
 	float fps_cooldown = 0;
 
+	int filterVaule = 0;
+
 	vec4f lightSource;
 
 	void InitTransformationBuffer();
 	void InitCameraAndLightBuffer();
+	void InitTexSampler();
 
 	void UpdateTransformationBuffer(mat4f ModelToWorldMatrix, mat4f WorldToViewMatrix, mat4f ProjectionMatrix);
 
 	void UpdateCameraAndLightBuffer(vec4f cameraPosition, vec4f lightPosition);
+
+	void SwapFilter(InputHandler* input);
 
 
 public:

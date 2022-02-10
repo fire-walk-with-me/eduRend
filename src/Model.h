@@ -32,6 +32,7 @@ protected:
 	ID3D11Buffer* index_buffer = nullptr;
 	ID3D11Buffer* colorAndShininess_buffer = nullptr;
 
+
 public:
 
 	Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context);
