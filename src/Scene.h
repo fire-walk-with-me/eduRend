@@ -35,17 +35,13 @@ public:
 
 	virtual void Init() = 0;
 
-	virtual void Update(
-		float dt,
-		InputHandler* input_handler) = 0;
+	virtual void Update(float dt, InputHandler* input_handler) = 0;
 	
 	virtual void Render() = 0;
 	
 	virtual void Release() = 0;
 
-	virtual void WindowResize(
-		int window_width,
-		int window_height);
+	virtual void WindowResize(int window_width, int window_height);
 };
 
 class OurTestScene : public Scene
@@ -130,7 +126,7 @@ class OurTestScene : public Scene
 
 	void UpdateCameraAndLightBuffer(vec4f cameraPosition, vec4f lightPosition);
 
-	void SwapFilter(InputHandler* input);
+	void SwapFilterAndMipMap(InputHandler* input);
 
 
 public:

@@ -63,7 +63,7 @@ void OurTestScene::Update(float dt, InputHandler* input_handler)
 		camera->move({ -camera_vel * dt, 0.0f, 0.0f });
 	if ((GetKeyState(VK_LBUTTON) & 0x100) != 0)
 		camera->rotate(input_handler);
-	SwapFilter(input_handler);
+	SwapFilterAndMipMap(input_handler);
 
 	// Now set/update object transformations
 	// This can be done using any sequence of transformation matrices,
@@ -83,7 +83,7 @@ void OurTestScene::Update(float dt, InputHandler* input_handler)
 	// Sponza model-to-world transformation
 	Msponza = mat4f::translation(0, -5, 0) *				 // Move down 5 units
 		      mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) *   // Rotate pi/2 radians (90 degrees) around y
-			  mat4f::scaling(0.05f);						 // The scene is quite large so scale it down to 5%
+			  mat4f::scaling(1);						 // The scene is quite large so scale it down to 5%
 
 	Mme = mat4f::translation(-1.7f, 0, -30) *					// Move down 5 units
 		  mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) *		// Rotate pi/2 radians (90 degrees) around y
@@ -127,7 +127,8 @@ void OurTestScene::Render()
 	dxdevice_context->PSSetConstantBuffers(0, 1, &cameraAndLight_buffer);
 	//dxdevice_context->PSSetConstantBuffers(0, 1, &colorAndShininess_buffer);
 
-	dxdevice_context->PSSetSamplers(0, 1, &tex_sampler[filterVaule]);
+	//dxdevice_context->PSSetSamplers(0, 1, &tex_sampler[filterVaule]);
+	dxdevice_context->PSSetSamplers(0, 1, &tex_sampler[4]);
 
 	// Obtain the matrices needed for rendering from the camera
 	Mview = camera->get_WorldToViewMatrix();
@@ -174,11 +175,12 @@ void OurTestScene::Release()
 
 	SAFE_RELEASE(transformation_buffer);
 	SAFE_RELEASE(cameraAndLight_buffer);
+
+	for (int i = sizeof(tex_sampler) / sizeof(tex_sampler[0] -1); i >= 0; i--)
+	SAFE_RELEASE(tex_sampler[i]);
 }
 
-void OurTestScene::WindowResize(
-	int window_width,
-	int window_height)
+void OurTestScene::WindowResize(int window_width, int window_height)
 {
 	if (camera)
 		camera->aspect = float(window_width) / window_height;
@@ -239,7 +241,7 @@ void OurTestScene::InitTexSampler()
 	HRESULT hr;
 	D3D11_SAMPLER_DESC samplerdesc =
 	{
-		D3D11_FILTER_MAXIMUM_MIN_MAG_MIP_POINT,
+		D3D11_FILTER_MIN_MAG_MIP_POINT,
 		D3D11_TEXTURE_ADDRESS_MIRROR,
 		D3D11_TEXTURE_ADDRESS_MIRROR,
 		D3D11_TEXTURE_ADDRESS_MIRROR,
@@ -274,7 +276,7 @@ void OurTestScene::InitTexSampler()
 	ASSERT(hr = dxdevice->CreateSamplerState(&samplerdesc, &tex_sampler[4]));
 }
 
-void OurTestScene::SwapFilter(InputHandler* input) 
+void OurTestScene::SwapFilterAndMipMap(InputHandler* input) 
 {
 	if (input->IsKeyPressed(Keys::D1)) filterVaule = 0;
 	else if (input->IsKeyPressed(Keys::D2)) filterVaule = 1;

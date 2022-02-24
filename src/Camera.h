@@ -19,6 +19,7 @@ class Camera
 {
 public:
 	// Aperture attributes
+
 	float vfov, aspect;	
 	
 	// Clip planes in view space coordinates
@@ -27,6 +28,7 @@ public:
 	// zFar should depend on the size of the scene
 	// This range should be kept as tight as possibly to improve
 	// numerical precision in the z-buffer
+
 	float zNear, zFar;	
 	float mousedx, mousedy;
 	float yaw, pitch;
@@ -35,12 +37,7 @@ public:
 						
 	vec3f position;
 
-	Camera(
-		float vfov,
-		float aspect,
-		float zNear,
-		float zFar) :
-		vfov(vfov), aspect(aspect), zNear(zNear), zFar(zFar)
+	Camera(float vfov, float aspect, float zNear, float zFar) : vfov(vfov), aspect(aspect), zNear(zNear), zFar(zFar)
 	{
 		position = {0.0f, 0.0f, 0.0f};
 	}
@@ -57,7 +54,6 @@ public:
 
 	// Return World-to-View matrix for this camera
 	mat4f get_WorldToViewMatrix();
-
 
 	// Matrix transforming from View space to Clip space
 	// In a performance sensitive situation this matrix should be precomputed

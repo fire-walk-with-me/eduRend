@@ -119,6 +119,11 @@ OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* d
 		i_ofs = (unsigned int)indices.size();
 	}
 
+	for (int i = 0; i < indices.size(); i += 3) 
+	{
+		compute_TB(mesh->vertices[indices[i + 0]], mesh->vertices[indices[i + 1]], mesh->vertices[indices[i + 2]]);
+	}
+
 	// Vertex array descriptor
 	D3D11_BUFFER_DESC vbufferDesc = { 0 };
 	vbufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -157,14 +162,18 @@ OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* d
 		HRESULT hr;
 
 		// Load Diffuse texture
-		if (mtl.Kd_texture_filename.size()) {
-
+		if (mtl.Kd_texture_filename.size()) 
+		{
 			hr = LoadTextureFromFile(dxdevice, dxdevice_context, mtl.Kd_texture_filename.c_str(), &mtl.diffuse_texture);
 			std::cout << "\t" << mtl.Kd_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 		}
 
 		// + other texture types here - see Material class
-		// ...
+		if (mtl.normal_texture_filename.size())
+		{
+			hr = LoadTextureFromFile(dxdevice, dxdevice_context, mtl.normal_texture_filename.c_str(), &mtl.normal_texture);
+			std::cout << "\t" << mtl.normal_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+		}
 	}
 	std::cout << "Done." << std::endl;
 
@@ -245,6 +254,7 @@ void OBJModel::Render() const
 		// Bind diffuse texture to slot t0 of the PS
 		dxdevice_context->PSSetShaderResources(0, 1, &mtl.diffuse_texture.texture_SRV);
 		// + bind other textures here, e.g. a normal map, to appropriate slots
+		dxdevice_context->PSSetShaderResources(1, 1, &mtl.normal_texture.texture_SRV);
 
 		UpdateColorAndShininessBuffer(mtl.Ka.xyz1(), mtl.Kd.xyz1(), mtl.Ks.xyz1(), vec4f(0, 0, 0, 0.5f));
 
@@ -256,6 +266,32 @@ void OBJModel::Render() const
 	{
 		UpdateColorAndShininessBuffer(material.Ka.xyz1(),  material.Kd.xyz1(),  material.Ks.xyz1(), vec4f(0,0,0, 0.5f));
 	}*/
+}
+
+void Model::compute_TB(Vertex& v0, Vertex& v1, Vertex& v2)
+{
+	vec3f tangent, binormal;
+	vec3f D, E;
+	vec2f F, G;
+
+	D = v1.Pos - v0.Pos;
+	E = v2.Pos - v0.Pos;
+
+	F = v1.TexCoord - v0.TexCoord;
+	G = v2.TexCoord - v0.TexCoord;
+
+	float partOne = 1.0f / (F.x * G.y - F.y * G.x);
+
+	tangent.x = partOne * (G.y * D.x - F.y * E.x);
+	tangent.y = partOne * (G.y * D.y - F.y * E.y);
+	tangent.z = partOne * (G.y * D.z - F.y * E.z);
+
+	binormal.x = partOne * (-G.x * D.x + F.x * E.x);
+	binormal.y = partOne * (-G.x * D.y + F.x * E.y);
+	binormal.z = partOne * (-G.x * D.z + F.x * E.z);
+
+	v0.Tangent = v1.Tangent = v2.Tangent = tangent;
+	v0.Binormal = v1.Binormal = v2.Binormal = binormal;
 }
 
 OBJModel::~OBJModel()

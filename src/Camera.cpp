@@ -1,6 +1,5 @@
 #pragma once
 #include "Camera.h"
-#include <iostream>
 
 
 void Camera::rotate(InputHandler* input_handler)
@@ -15,9 +14,6 @@ void Camera::rotate(InputHandler* input_handler)
 		yaw = 0;
 	if (pitch > PI * 2)
 		pitch = 0;
-
-	/*std::cout << yaw << std::endl;
-	std::cout << pitch << std::endl;*/
 
 	rotation = mat4f::rotation(0, yaw, pitch);
 }

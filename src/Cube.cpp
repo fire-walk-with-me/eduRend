@@ -24,83 +24,83 @@ Cube::Cube(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Mode
 	v03.TexCoord = { 1, 0 };
 	//Second/Back
 	v10.Pos = { 1, 1, -1 };
-	v10.Normal = { 0, 0, 1 };
+	v10.Normal = { 0, 0, -1 };
 	v10.TexCoord = { 0, 0 };
 
 	v11.Pos = { 1, -1, -1 };
-	v11.Normal = { 0, 0, 1 };
+	v11.Normal = { 0, 0, -1 };
 	v11.TexCoord = { 0, 1 };
 
 	v12.Pos = { -1, 1, -1 };
-	v12.Normal = { 0, 0, 1 };
+	v12.Normal = { 0, 0, -1 };
 	v12.TexCoord = { 1, 1 };
 
 	v13.Pos = { -1, -1, -1 };
-	v13.Normal = { 0, 0, 1 };
+	v13.Normal = { 0, 0, -1 };
 	v13.TexCoord = { 1, 0 };
-	//Third
+	//Third/Right
 	v20.Pos = { 1, 1, -1 };
-	v20.Normal = { 0, 0, 1 };
+	v20.Normal = { 1, 0, 0 };
 	v20.TexCoord = { 0, 0 };
 
 	v21.Pos = { 1, -1, -1 };
-	v21.Normal = { 0, 0, 1 };
+	v21.Normal = { 1, 0, 0 };
 	v21.TexCoord = { 0, 1 };
 
 	v22.Pos = { 1, 1, 1 };
-	v22.Normal = { 0, 0, 1 };
+	v22.Normal = { 1, 0, 0 };
 	v22.TexCoord = { 1, 1 };
 
 	v23.Pos = { 1, -1, 1 };
-	v23.Normal = { 0, 0, 1 };
+	v23.Normal = { 1, 0, 0 };
 	v23.TexCoord = { 1, 0 };
-	//Forth
+	//Forth/Top
 	v30.Pos = { 1, 1, -1 };
-	v30.Normal = { 0, 0, 1 };
+	v30.Normal = { 0, 1, 0 };
 	v30.TexCoord = { 0, 0 };
 
 	v31.Pos = { -1, 1, -1 };
-	v31.Normal = { 0, 0, 1 };
+	v31.Normal = { 0, 1, 0 };
 	v31.TexCoord = { 0, 1 };
 
 	v32.Pos = { 1, 1, 1 };
-	v32.Normal = { 0, 0, 1 };
+	v32.Normal = { 0, 1, 0 };
 	v32.TexCoord = { 1, 1 };
 
 	v33.Pos = { -1, 1, 1 };
-	v33.Normal = { 0, 0, 1 };
+	v33.Normal = { 0, 1, 0 };
 	v33.TexCoord = { 1, 0 };
-	//Fith
+	//Fith/Bottom
 	v40.Pos = { 1, -1, -1 };
-	v40.Normal = { 0, 0, 1 };
+	v40.Normal = { 0, -1, 0 };
 	v40.TexCoord = { 0, 0 };
 
 	v41.Pos = { -1, -1, -1 };
-	v41.Normal = { 0, 0, 1 };
+	v41.Normal = { 0, -1, 0 };
 	v41.TexCoord = { 0, 1 };
 
 	v42.Pos = { 1, -1, 1 };
-	v42.Normal = { 0, 0, 1 };
+	v42.Normal = { 0, -1, 0 };
 	v42.TexCoord = { 1, 1 };
 
 	v43.Pos = { -1, -1, 1 };
-	v43.Normal = { 0, 0, 1 };
+	v43.Normal = { 0, -1, 0 };
 	v43.TexCoord = { 1, 0 };
-	//Sixth
+	//Sixth/Left
 	v50.Pos = { -1, -1, 1 };
-	v50.Normal = { 0, 0, 1 };
+	v50.Normal = { -1, 0, 0 };
 	v50.TexCoord = { 0, 0 };
 
 	v51.Pos = { -1, 1, 1 };
-	v51.Normal = { 0, 0, 1 };
+	v51.Normal = { -1, 0, 0 };
 	v51.TexCoord = { 0, 1 };
 
 	v52.Pos = { -1, -1, -1 };
-	v52.Normal = { 0, 0, 1 };
+	v52.Normal = { -1, 0, 0 };
 	v52.TexCoord = { 1, 1 };
 
 	v53.Pos = { -1, 1, -1 };
-	v53.Normal = { 0, 0, 1 };
+	v53.Normal = { -1, 0, 0 };
 	v53.TexCoord = { 1, 0 };
 
 
@@ -223,7 +223,6 @@ Cube::Cube(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Mode
 		hr = LoadTextureFromFile(dxdevice, dxdevice_context, defaultMaterial.Kd_texture_filename.c_str(), &defaultMaterial.diffuse_texture);
 		std::cout << "\t" << defaultMaterial.Kd_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 	}
-
 }
 
 void Cube::Render() const

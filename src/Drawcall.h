@@ -45,6 +45,7 @@ struct Material
 	// Device textures
 	Texture diffuse_texture;
 	// + other texture types
+	Texture normal_texture;
 };
 
 static Material DefaultMaterial = Material();

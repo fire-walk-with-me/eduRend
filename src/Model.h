@@ -31,7 +31,8 @@ protected:
 	ID3D11Buffer* vertex_buffer = nullptr;
 	ID3D11Buffer* index_buffer = nullptr;
 	ID3D11Buffer* colorAndShininess_buffer = nullptr;
-
+	
+	
 
 public:
 
@@ -42,6 +43,7 @@ public:
 	//
 	virtual void Render() const = 0;
 
+	void compute_TB(Vertex& v0, Vertex& v1, Vertex& v2);
 
 	void InitColorAndShininessBuffer();
 	void UpdateColorAndShininessBuffer(vec4f ambient, vec4f diffuse, vec4f specular, vec4f shininess) const;
@@ -95,7 +97,6 @@ class OBJModel : public Model
 	}
 
 
-
 public:
 
 	OBJModel* parent;
@@ -105,8 +106,9 @@ public:
 	mat4f rotation;
 	mat4f scaling;
 
-	OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context);
 
+	OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context);
+	
 	virtual void Render() const;
 
 	mat4f getTransform();
