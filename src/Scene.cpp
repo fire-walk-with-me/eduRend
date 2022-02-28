@@ -37,6 +37,7 @@ void OurTestScene::Init()
 	cube = new Cube(dxdevice, dxdevice_context);
 	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", nullptr, dxdevice, dxdevice_context);
 	me = new OBJModel("assets/me/meModel.obj", nullptr, dxdevice, dxdevice_context);
+	skybox = new OBJModel("assets/skybox/skybox.obj", nullptr, dxdevice, dxdevice_context);
 	sphere = new OBJModel("assets/sphere/sphere.obj", nullptr, dxdevice, dxdevice_context);
 	childSphere1 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context);
 	childSphere2 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context);
@@ -54,13 +55,13 @@ void OurTestScene::Update(float dt, InputHandler* input_handler)
 {
 	// Basic camera control
 	if (input_handler->IsKeyPressed(Keys::W))
-		camera->move({ 0.0f, 0.0f, -camera_vel * dt });
+		camera->move({ 0.0f, 0.0f, -camera_vel * dt * 2.0f });
 	if (input_handler->IsKeyPressed(Keys::S))
-		camera->move({ 0.0f, 0.0f, camera_vel * dt });
+		camera->move({ 0.0f, 0.0f, camera_vel * dt * 2.0f });
 	if (input_handler->IsKeyPressed(Keys::D))
-		camera->move({ camera_vel * dt, 0.0f, 0.0f });
+		camera->move({ camera_vel * dt * 2.0f, 0.0f, 0.0f });
 	if (input_handler->IsKeyPressed(Keys::A))
-		camera->move({ -camera_vel * dt, 0.0f, 0.0f });
+		camera->move({ -camera_vel * dt * 2.0f, 0.0f, 0.0f });
 	if ((GetKeyState(VK_LBUTTON) & 0x100) != 0)
 		camera->rotate(input_handler);
 	SwapFilterAndMipMap(input_handler);
@@ -89,6 +90,11 @@ void OurTestScene::Update(float dt, InputHandler* input_handler)
 		  mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) *		// Rotate pi/2 radians (90 degrees) around y
 		  mat4f::scaling(2,2,2);							 
 
+
+	Mskybox = mat4f::translation(0, -5, 0) *
+			  mat4f::rotation(0, 0, -angle / 5) *
+			  mat4f::scaling(100, 100, 100);
+
 	//Msphere = mat4f::translation(-1.7f, 0, -15) *					// Move down 5 units
 	//		  mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) *		// Rotate pi/2 radians (90 degrees) around y
 	//		  mat4f::scaling(1, 1, 1);
@@ -102,7 +108,7 @@ void OurTestScene::Update(float dt, InputHandler* input_handler)
 	// Increment the rotation angle.
 	angle += angle_vel * dt;
 
-	lightSource = vec4f(0, 15, 0, angle);
+	lightSource = vec4f(0, 20, 0, 0);
 
 	// Print fps
 	fps_cooldown -= dt;
@@ -127,8 +133,7 @@ void OurTestScene::Render()
 	dxdevice_context->PSSetConstantBuffers(0, 1, &cameraAndLight_buffer);
 	//dxdevice_context->PSSetConstantBuffers(0, 1, &colorAndShininess_buffer);
 
-	//dxdevice_context->PSSetSamplers(0, 1, &tex_sampler[filterVaule]);
-	dxdevice_context->PSSetSamplers(0, 1, &tex_sampler[4]);
+	dxdevice_context->PSSetSamplers(0, 1, &tex_sampler[filterVaule]);
 
 	// Obtain the matrices needed for rendering from the camera
 	Mview = camera->get_WorldToViewMatrix();
@@ -144,6 +149,9 @@ void OurTestScene::Render()
 
 	UpdateTransformationBuffer(Mme, Mview, Mproj);
 	me->Render();
+
+	UpdateTransformationBuffer(Mskybox, Mview, Mproj);
+	skybox->Render();
 
 	UpdateTransformationBuffer(sphere->getTransform(), Mview, Mproj);
 	sphere->Render();
@@ -168,6 +176,7 @@ void OurTestScene::Release()
 	SAFE_DELETE(sponza);
 	SAFE_DELETE(camera);
 	SAFE_DELETE(me);
+	SAFE_DELETE(skybox);
 	SAFE_DELETE(sphere);
 	SAFE_DELETE(childSphere1);
 	SAFE_DELETE(childSphere2);

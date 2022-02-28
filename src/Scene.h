@@ -83,6 +83,7 @@ class OurTestScene : public Scene
 	QuadModel* quad;
 	OBJModel* sponza;
 	OBJModel* me;
+	OBJModel* skybox;
 	OBJModel* sphere;
 	OBJModel* childSphere1;
 	OBJModel* childSphere2;
@@ -97,7 +98,7 @@ class OurTestScene : public Scene
 	mat4f Mquad;
 
 	mat4f Mme;
-
+	mat4f Mskybox;
 	mat4f Msphere;
 	mat4f MchildSphere1;
 	mat4f MchildSphere2;
@@ -114,7 +115,7 @@ class OurTestScene : public Scene
 	float camera_vel = 5.0f;	// Camera movement velocity in units/s
 	float fps_cooldown = 0;
 
-	int filterVaule = 0;
+	int filterVaule = 4;
 
 	vec4f lightSource;
 
