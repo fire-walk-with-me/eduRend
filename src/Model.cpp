@@ -9,6 +9,9 @@
 Model::Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : dxdevice(dxdevice), dxdevice_context(dxdevice_context)
 {
 	InitColorAndShininessBuffer();
+
+	defaultMaterial.Kd_texture_filename = "assets/crytek-sponza/textures/sponza_roof_diff.png";
+	defaultMaterial.normal_texture_filename = "assets/crytek-sponza/textures/sponza_roof_normal.png";
 }
 
 QuadModel::QuadModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Model(dxdevice, dxdevice_context)
@@ -78,7 +81,6 @@ QuadModel::QuadModel(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_conte
 	nbr_indices = (unsigned int)indices.size();
 }
 
-
 void QuadModel::Render() const
 {
 	// Bind our vertex buffer
@@ -93,13 +95,14 @@ void QuadModel::Render() const
 	dxdevice_context->DrawIndexed(nbr_indices, 0, 0);
 }
 
-OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Model(dxdevice, dxdevice_context)
+OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context, bool isSkybox) : Model(dxdevice, dxdevice_context)
 {
 	// Load the OBJ
 	OBJLoader* mesh = new OBJLoader();
 	mesh->Load(objfile);
 
 	this->parent = parent;
+	skybox = isSkybox;
 
 	// Load and organize indices in ranges per drawcall (material)
 	std::vector<unsigned> indices;
@@ -155,6 +158,18 @@ OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* d
 	// Copy materials from mesh
 	append_materials(mesh->materials);
 
+	if (skybox)
+	{
+		cube_filename[0] = "assets/cubemaps/cubemaps/brightday/posx.png";
+		cube_filename[1] = "assets/cubemaps/cubemaps/brightday/negx.png";
+		cube_filename[2] = "assets/cubemaps/cubemaps/brightday/posy.png";
+		cube_filename[3] = "assets/cubemaps/cubemaps/brightday/negy.png";
+		cube_filename[4] = "assets/cubemaps/cubemaps/brightday/posz.png";
+		cube_filename[5] = "assets/cubemaps/cubemaps/brightday/negz.png";
+
+		dxdevice_context->PSSetShaderResources( 2, 1, &cubeTexture.texture_SRV);
+	}
+
 	// Go through materials and load textures (if any) to device
 	std::cout << "Loading textures..." << std::endl;
 	for (auto& mtl : materials)
@@ -167,6 +182,18 @@ OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* d
 			hr = LoadTextureFromFile(dxdevice, dxdevice_context, mtl.Kd_texture_filename.c_str(), &mtl.diffuse_texture);
 			std::cout << "\t" << mtl.Kd_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 		}
+		else if (skybox)
+		{
+			hr = LoadCubeTextureFromFile(dxdevice, cube_filename, &cubeTexture);
+			if (SUCCEEDED(hr)) std::cout << "Cubemap OK" << std::endl;
+			else std::cout << "Cubemap failed to load" << std::endl;
+
+		}
+		else
+		{
+			hr = LoadTextureFromFile(dxdevice, dxdevice_context,defaultMaterial.Kd_texture_filename.c_str(), &defaultMaterial.diffuse_texture);
+			std::cout << "\t" << defaultMaterial.Kd_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+		}
 
 		// + other texture types here - see Material class
 		if (mtl.normal_texture_filename.size())
@@ -174,8 +201,17 @@ OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* d
 			hr = LoadTextureFromFile(dxdevice, dxdevice_context, mtl.normal_texture_filename.c_str(), &mtl.normal_texture);
 			std::cout << "\t" << mtl.normal_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
 		}
+		else
+		{
+			hr = LoadTextureFromFile(dxdevice, dxdevice_context, defaultMaterial.normal_texture_filename.c_str(), &defaultMaterial.normal_texture);
+			std::cout << "\t" << defaultMaterial.normal_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+		}
 	}
+
 	std::cout << "Done." << std::endl;
+
+
+
 
 	SAFE_DELETE(mesh);
 }
@@ -199,6 +235,7 @@ void Model::UpdateColorAndShininessBuffer(vec4f ambient, vec4f diffuse, vec4f sp
 	dxdevice_context->Map(colorAndShininess_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
 	ColorAndShininessBuffer* matrix_buffer_ = (ColorAndShininessBuffer*)resource.pData;
 	//matrix_buffer_->materials = ambient + diffuse + specular * shininess;
+	if (skybox) ambient.w = 1;
 	matrix_buffer_->ambient = ambient;
 	matrix_buffer_->diffuse = diffuse;
 	matrix_buffer_->specular = specular;
@@ -302,4 +339,6 @@ OBJModel::~OBJModel()
 
 		// Release other used textures ...
 	}
+
+	SAFE_RELEASE(cubeTexture.texture_SRV);
 }

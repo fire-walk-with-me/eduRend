@@ -215,14 +215,26 @@ Cube::Cube(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context) : Mode
 	SETNAME(index_buffer, "IndexBuffer");
 
 	nbr_indices = (unsigned int)indices.size();
-	HRESULT hr;
+
 
 	// Load Diffuse texture
-	if (defaultMaterial.Kd_texture_filename.size())
-	{
-		hr = LoadTextureFromFile(dxdevice, dxdevice_context, defaultMaterial.Kd_texture_filename.c_str(), &defaultMaterial.diffuse_texture);
-		std::cout << "\t" << defaultMaterial.Kd_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
-	}
+	HRESULT hr;
+	
+	hr = LoadTextureFromFile(dxdevice, dxdevice_context, defaultMaterial.Kd_texture_filename.c_str(), &defaultMaterial.diffuse_texture);
+	std::cout << "\t" << defaultMaterial.Kd_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+	
+	hr = LoadTextureFromFile(dxdevice, dxdevice_context, defaultMaterial.normal_texture_filename.c_str(), &defaultMaterial.normal_texture);
+	std::cout << "\t" << defaultMaterial.normal_texture_filename << (SUCCEEDED(hr) ? " - OK" : "- FAILED") << std::endl;
+	
+
+	makeCubeMirror();
+}
+
+void Cube::makeCubeMirror() 
+{
+	defaultMaterial.Ks = {1, 1, 1};
+	defaultMaterial.Ka = { 0, 0, 0};
+	defaultMaterial.Ka = { 0, 0, 0};
 }
 
 void Cube::Render() const

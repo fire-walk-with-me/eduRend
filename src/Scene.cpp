@@ -35,13 +35,13 @@ void OurTestScene::Init()
 	// Create objects
 	quad = new QuadModel(dxdevice, dxdevice_context);
 	cube = new Cube(dxdevice, dxdevice_context);
-	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", nullptr, dxdevice, dxdevice_context);
-	me = new OBJModel("assets/me/meModel.obj", nullptr, dxdevice, dxdevice_context);
-	skybox = new OBJModel("assets/skybox/skybox.obj", nullptr, dxdevice, dxdevice_context);
-	sphere = new OBJModel("assets/sphere/sphere.obj", nullptr, dxdevice, dxdevice_context);
-	childSphere1 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context);
-	childSphere2 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context);
-	childSphere3 = new OBJModel("assets/sphere/sphere.obj", childSphere2, dxdevice, dxdevice_context);
+	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", nullptr, dxdevice, dxdevice_context, false);
+	me = new OBJModel("assets/me/meModel.obj", nullptr, dxdevice, dxdevice_context, false);
+	skybox = new OBJModel("assets/skybox/skybox.obj", nullptr, dxdevice, dxdevice_context, true);
+	sphere = new OBJModel("assets/sphere/sphere.obj", nullptr, dxdevice, dxdevice_context, false);
+	childSphere1 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context, false);
+	childSphere2 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context, false);
+	childSphere3 = new OBJModel("assets/sphere/sphere.obj", childSphere2, dxdevice, dxdevice_context, false);
 
 	/*lightSource.push_back(vec4f(0, 15, 0, 0));
 	lightSource.push_back(vec4f(5, 20, -15, 0));*/
@@ -90,10 +90,9 @@ void OurTestScene::Update(float dt, InputHandler* input_handler)
 		  mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) *		// Rotate pi/2 radians (90 degrees) around y
 		  mat4f::scaling(2,2,2);							 
 
-
 	Mskybox = mat4f::translation(0, -5, 0) *
-			  mat4f::rotation(0, 0, -angle / 5) *
-			  mat4f::scaling(100, 100, 100);
+			  mat4f::rotation(0, 0, 0) *
+			  mat4f::scaling(200, 200, 200);
 
 	//Msphere = mat4f::translation(-1.7f, 0, -15) *					// Move down 5 units
 	//		  mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) *		// Rotate pi/2 radians (90 degrees) around y

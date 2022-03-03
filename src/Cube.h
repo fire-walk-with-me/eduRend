@@ -13,8 +13,6 @@ class Cube : public Model
 		int mtl_index;
 	};
 
-	Material defaultMaterial;
-
 	std::vector<IndexRange> index_ranges;
 	std::vector<Material> materials;
 
@@ -37,6 +35,7 @@ public:
 			v50, v51, v52, v53;
 
 	void Render() const;
+	void makeCubeMirror();
 
 	Cube(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context);
 

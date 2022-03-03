@@ -1,6 +1,11 @@
 
 Texture2D texDiffuse : register(t0);
 Texture2D texNormal : register(t1);
+TextureCube texCube : register(t2);
+
+SamplerState texSampler : register(s0);
+SamplerState cubeSampler : register(s1);
+
 
 struct PSIn
 {
@@ -30,8 +35,6 @@ cbuffer ColorAndShininessBuffer : register(b1)
 	float1 shininess;
 };
 
-SamplerState texSampler : register(s0);
-
 float4 PS_main(PSIn input) : SV_Target
 {
 	float4 diffuseTexture = texDiffuse.Sample(texSampler, input.TexCoord);
@@ -44,7 +47,9 @@ float4 PS_main(PSIn input) : SV_Target
     float3 light = normalize(lightPosition - input.WorldPos);
     float3 reflection = normalize(reflect(-light, newNormal));
     float3 view = normalize(cameraPosition - input.WorldPos);
-		
+	
+    float3 newReflection = normalize(reflect(view, newNormal));
+	
     float3 A = ambient.xyz * 0.1f;
     float3 D = mul(diffuseTexture.xyz, max(dot(light, newNormal), 0.0f));
     float3 S = mul(specular.xyz, pow(max(dot(reflection, view), 0.0f), 200.0f));
