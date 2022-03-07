@@ -187,7 +187,6 @@ OBJModel::OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* d
 			hr = LoadCubeTextureFromFile(dxdevice, cube_filename, &cubeTexture);
 			if (SUCCEEDED(hr)) std::cout << "Cubemap OK" << std::endl;
 			else std::cout << "Cubemap failed to load" << std::endl;
-
 		}
 		else
 		{
