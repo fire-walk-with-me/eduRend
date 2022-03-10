@@ -31,12 +31,12 @@ protected:
 	ID3D11Buffer* vertex_buffer = nullptr;
 	ID3D11Buffer* index_buffer = nullptr;
 	ID3D11Buffer* colorAndShininess_buffer = nullptr;
-	
+
 
 public:
 
 	Model(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context);
-	
+
 	Material defaultMaterial;
 	bool skybox;
 
@@ -59,7 +59,7 @@ public:
 	};
 
 	virtual ~Model()
-	{ 
+	{
 		SAFE_RELEASE(vertex_buffer);
 		SAFE_RELEASE(index_buffer);
 		SAFE_RELEASE(colorAndShininess_buffer);
@@ -104,7 +104,6 @@ public:
 	OBJModel* parent;
 	mat4f transform;
 
-	Texture cubeTexture;
 	const char* cube_filename[6];
 
 
@@ -114,7 +113,7 @@ public:
 
 
 	OBJModel(const std::string& objfile, OBJModel* parent, ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context, bool isSkybox);
-	
+
 	virtual void Render() const;
 
 	mat4f getTransform();

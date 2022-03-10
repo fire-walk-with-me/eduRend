@@ -20,8 +20,8 @@
 class Scene
 {
 protected:
-	ID3D11Device*			dxdevice;
-	ID3D11DeviceContext*	dxdevice_context;
+	ID3D11Device* dxdevice;
+	ID3D11DeviceContext* dxdevice_context;
 	int						window_width;
 	int						window_height;
 
@@ -36,9 +36,9 @@ public:
 	virtual void Init() = 0;
 
 	virtual void Update(float dt, InputHandler* input_handler) = 0;
-	
+
 	virtual void Render() = 0;
-	
+
 	virtual void Release() = 0;
 
 	virtual void WindowResize(int window_width, int window_height);
@@ -54,7 +54,7 @@ class OurTestScene : public Scene
 	ID3D11Buffer* transformation_buffer = nullptr;
 	// + other CBuffers
 	ID3D11Buffer* cameraAndLight_buffer = nullptr;
-	
+
 	ID3D11SamplerState* tex_sampler[5];
 
 	// 
@@ -69,7 +69,7 @@ class OurTestScene : public Scene
 		mat4f ProjectionMatrix;
 	};
 
-	struct CameraAndLightBuffer 
+	struct CameraAndLightBuffer
 	{
 		vec4f cameraPosition;
 		vec4f lightPosition;
@@ -108,6 +108,9 @@ class OurTestScene : public Scene
 	mat4f Mview;
 	// Projection matrix
 	mat4f Mproj;
+
+	const char* cube_filename[6];
+	Texture cubeTexture;
 
 	// Misc
 	float angle = 0;			// A per-frame updated rotation angle (radians)...

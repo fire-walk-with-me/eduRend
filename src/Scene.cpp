@@ -10,8 +10,8 @@ void Scene::WindowResize(int window_width, int window_height)
 	this->window_height = window_height;
 }
 
-OurTestScene::OurTestScene( ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context, int window_width, int window_height) : Scene(dxdevice, dxdevice_context, window_width, window_height)
-{ 
+OurTestScene::OurTestScene(ID3D11Device* dxdevice, ID3D11DeviceContext* dxdevice_context, int window_width, int window_height) : Scene(dxdevice, dxdevice_context, window_width, window_height)
+{
 	InitTransformationBuffer();
 	// + init other CBuffers
 	InitCameraAndLightBuffer();
@@ -36,15 +36,27 @@ void OurTestScene::Init()
 	quad = new QuadModel(dxdevice, dxdevice_context);
 	cube = new Cube(dxdevice, dxdevice_context);
 	sponza = new OBJModel("assets/crytek-sponza/sponza.obj", nullptr, dxdevice, dxdevice_context, false);
-	me = new OBJModel("assets/me/meModel.obj", nullptr, dxdevice, dxdevice_context, false);
+	//me = new OBJModel("assets/me/meModel.obj", nullptr, dxdevice, dxdevice_context, false);
 	skybox = new OBJModel("assets/skybox/skybox.obj", nullptr, dxdevice, dxdevice_context, true);
 	sphere = new OBJModel("assets/sphere/sphere.obj", nullptr, dxdevice, dxdevice_context, false);
 	childSphere1 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context, false);
 	childSphere2 = new OBJModel("assets/sphere/sphere.obj", sphere, dxdevice, dxdevice_context, false);
 	childSphere3 = new OBJModel("assets/sphere/sphere.obj", childSphere2, dxdevice, dxdevice_context, false);
 
-	/*lightSource.push_back(vec4f(0, 15, 0, 0));
-	lightSource.push_back(vec4f(5, 20, -15, 0));*/
+	HRESULT hr;
+
+	cube_filename[0] = "assets/cubemaps/cubemaps/brightday/posx.png";
+	cube_filename[1] = "assets/cubemaps/cubemaps/brightday/negx.png";
+	cube_filename[2] = "assets/cubemaps/cubemaps/brightday/negy.png";
+	cube_filename[3] = "assets/cubemaps/cubemaps/brightday/posy.png";
+	cube_filename[4] = "assets/cubemaps/cubemaps/brightday/posz.png";
+	cube_filename[5] = "assets/cubemaps/cubemaps/brightday/negz.png";
+
+	hr = LoadCubeTextureFromFile(dxdevice, cube_filename, &cubeTexture);
+	if (SUCCEEDED(hr)) std::cout << "Cubemap OK" << std::endl;
+	else std::cout << "Cubemap failed to load" << std::endl;
+
+	dxdevice_context->PSSetShaderResources(2, 1, &cubeTexture.texture_SRV);
 }
 
 //
@@ -74,25 +86,25 @@ void OurTestScene::Update(float dt, InputHandler* input_handler)
 
 	// Quad model-to-world transformation
 	Mquad = mat4f::translation(0, 0, 0) *				// No translation
-			mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
-			mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%
+		mat4f::rotation(-angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
+		mat4f::scaling(1.5, 1.5, 1.5);				// Scale uniformly to 150%
 
 	Mcube = mat4f::translation(-2, -2, 5) *				// little bit of translation
-			mat4f::rotation(angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
-			mat4f::scaling(1, 1, 1);					// Scale uniformly to 100%
+		mat4f::rotation(angle, 0.0f, 1.0f, 0.0f) *	// Rotate continuously around the y-axis
+		mat4f::scaling(1, 1, 1);					// Scale uniformly to 100%
 
-	// Sponza model-to-world transformation
+// Sponza model-to-world transformation
 	Msponza = mat4f::translation(0, -5, 0) *				 // Move down 5 units
-		      mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) *   // Rotate pi/2 radians (90 degrees) around y
-			  mat4f::scaling(1);						 // The scene is quite large so scale it down to 5%
+		mat4f::rotation(fPI / 2, 0.0f, 1.0f, 0.0f) *   // Rotate pi/2 radians (90 degrees) around y
+		mat4f::scaling(1);						 // The scene is quite large so scale it down to 5%
 
 	Mme = mat4f::translation(-1.7f, 0, -30) *					// Move down 5 units
-		  mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) *		// Rotate pi/2 radians (90 degrees) around y
-		  mat4f::scaling(2,2,2);							 
+		mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) *		// Rotate pi/2 radians (90 degrees) around y
+		mat4f::scaling(2, 2, 2);
 
 	Mskybox = mat4f::translation(0, -5, 0) *
-			  mat4f::rotation(0, 0, 0) *
-			  mat4f::scaling(200, 200, 200);
+		mat4f::rotation(0, 0, 0) *
+		mat4f::scaling(200, 200, 200);
 
 	//Msphere = mat4f::translation(-1.7f, 0, -15) *					// Move down 5 units
 	//		  mat4f::rotation(angle / 2, 0.0f, 1.0f, 0.0f) *		// Rotate pi/2 radians (90 degrees) around y
@@ -146,8 +158,8 @@ void OurTestScene::Render()
 	UpdateTransformationBuffer(Mcube, Mview, Mproj);
 	cube->Render();
 
-	UpdateTransformationBuffer(Mme, Mview, Mproj);
-	me->Render();
+	/*UpdateTransformationBuffer(Mme, Mview, Mproj);
+	me->Render();*/
 
 	UpdateTransformationBuffer(Mskybox, Mview, Mproj);
 	skybox->Render();
@@ -174,18 +186,18 @@ void OurTestScene::Release()
 	SAFE_DELETE(quad);
 	SAFE_DELETE(sponza);
 	SAFE_DELETE(camera);
-	SAFE_DELETE(me);
+	//SAFE_DELETE(me);
 	SAFE_DELETE(skybox);
 	SAFE_DELETE(sphere);
 	SAFE_DELETE(childSphere1);
 	SAFE_DELETE(childSphere2);
 	SAFE_DELETE(childSphere3);
-
+	SAFE_RELEASE(cubeTexture.texture_SRV);
 	SAFE_RELEASE(transformation_buffer);
 	SAFE_RELEASE(cameraAndLight_buffer);
 
-	for (int i = sizeof(tex_sampler) / sizeof(tex_sampler[0] -1); i >= 0; i--)
-	SAFE_RELEASE(tex_sampler[i]);
+	for (int i = sizeof(tex_sampler) / sizeof(tex_sampler[0] - 1); i >= 0; i--)
+		SAFE_RELEASE(tex_sampler[i]);
 }
 
 void OurTestScene::WindowResize(int window_width, int window_height)
@@ -221,7 +233,7 @@ void OurTestScene::UpdateTransformationBuffer(mat4f ModelToWorldMatrix, mat4f Wo
 	dxdevice_context->Unmap(transformation_buffer, 0);
 }
 
-void OurTestScene::InitCameraAndLightBuffer() 
+void OurTestScene::InitCameraAndLightBuffer()
 {
 	HRESULT hr;
 	D3D11_BUFFER_DESC MatrixBuffer_desc = { 0 };
@@ -234,7 +246,7 @@ void OurTestScene::InitCameraAndLightBuffer()
 	ASSERT(hr = dxdevice->CreateBuffer(&MatrixBuffer_desc, nullptr, &cameraAndLight_buffer));
 }
 
-void OurTestScene::UpdateCameraAndLightBuffer(vec4f cameraPosition, vec4f lightPosition) 
+void OurTestScene::UpdateCameraAndLightBuffer(vec4f cameraPosition, vec4f lightPosition)
 {
 	D3D11_MAPPED_SUBRESOURCE resource;
 	dxdevice_context->Map(cameraAndLight_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
@@ -244,7 +256,7 @@ void OurTestScene::UpdateCameraAndLightBuffer(vec4f cameraPosition, vec4f lightP
 	dxdevice_context->Unmap(cameraAndLight_buffer, 0);
 }
 
-void OurTestScene::InitTexSampler() 
+void OurTestScene::InitTexSampler()
 {
 	HRESULT hr;
 	D3D11_SAMPLER_DESC samplerdesc =
@@ -284,7 +296,7 @@ void OurTestScene::InitTexSampler()
 	ASSERT(hr = dxdevice->CreateSamplerState(&samplerdesc, &tex_sampler[4]));
 }
 
-void OurTestScene::SwapFilterAndMipMap(InputHandler* input) 
+void OurTestScene::SwapFilterAndMipMap(InputHandler* input)
 {
 	if (input->IsKeyPressed(Keys::D1)) filterVaule = 0;
 	else if (input->IsKeyPressed(Keys::D2)) filterVaule = 1;
